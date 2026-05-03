@@ -1,0 +1,17 @@
+import { NextResponse } from 'next/server'
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const url = searchParams.get('url')
+  if (!url) return NextResponse.json({ error: 'missing url' }, { status: 400 })
+
+  try {
+    const res = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(url)}`)
+    if (res.ok) {
+      const short = (await res.text()).trim()
+      if (short.startsWith('https://')) return NextResponse.json({ url: short })
+    }
+  } catch {}
+
+  return NextResponse.json({ url })
+}

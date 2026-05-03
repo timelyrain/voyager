@@ -176,10 +176,10 @@ export default function MapPage() {
 
   async function shortenUrl(longUrl: string): Promise<string> {
     try {
-      const res = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(longUrl)}`)
+      const res = await fetch(`/api/shorten?url=${encodeURIComponent(longUrl)}`)
       if (res.ok) {
-        const short = (await res.text()).trim()
-        if (short.startsWith('https://')) return short
+        const { url } = await res.json()
+        if (url) return url
       }
     } catch {}
     return longUrl
