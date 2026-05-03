@@ -140,7 +140,8 @@ export default function MapPage() {
   }
 
   function copyShareLink() {
-    const url = `${window.location.origin}/u/${username}`
+    const base = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
+    const url = `${base}/u/${username}`
     navigator.clipboard.writeText(url)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
