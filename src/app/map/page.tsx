@@ -166,6 +166,13 @@ export default function MapPage() {
     return `${base}/u/${key}`
   }
 
+  function generateShortKey() {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
+    const arr = new Uint8Array(10)
+    crypto.getRandomValues(arr)
+    return Array.from(arr, (b) => chars[b % chars.length]).join('')
+  }
+
   async function handleShareClick() {
     if (!user) return
     setShareLoading(true)
@@ -173,9 +180,10 @@ export default function MapPage() {
     if (!key) {
       const supabase = createClient()
       const displayName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || ''
+      const shortKey = generateShortKey()
       const { data } = await supabase
         .from('profiles')
-        .insert({ user_id: user.id, display_name: displayName })
+        .insert({ user_id: user.id, display_name: displayName, share_key: shortKey })
         .select('share_key')
         .single()
       key = data?.share_key ?? null
@@ -187,7 +195,7 @@ export default function MapPage() {
 
   async function handleRegenerate() {
     if (!user) return
-    const newKey = crypto.randomUUID()
+    const newKey = generateShortKey()
     const supabase = createClient()
     await supabase.from('profiles').update({ share_key: newKey }).eq('user_id', user.id)
     setShareKey(newKey)

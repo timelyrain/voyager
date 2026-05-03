@@ -20,7 +20,7 @@ export default function ShareModal({ url, visitedCount, onClose, onRegenerate }:
     setRegenerating(false)
     setConfirmRegen(false)
   }
-  const text = `I've visited ${visitedCount} countr${visitedCount === 1 ? 'y' : 'ies'} around the world 🌍 Check out my travel map:`
+  const text = `I've visited ${visitedCount} countr${visitedCount === 1 ? 'y' : 'ies'} around the world 🌍 See my travel map:`
 
   const platforms = [
     {
