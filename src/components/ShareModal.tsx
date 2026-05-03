@@ -1,12 +1,25 @@
 'use client'
 
+import { useState } from 'react'
+
 interface ShareModalProps {
   url: string
   visitedCount: number
   onClose: () => void
+  onRegenerate: () => Promise<void>
 }
 
-export default function ShareModal({ url, visitedCount, onClose }: ShareModalProps) {
+export default function ShareModal({ url, visitedCount, onClose, onRegenerate }: ShareModalProps) {
+  const [regenerating, setRegenerating] = useState(false)
+  const [confirmRegen, setConfirmRegen] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  async function handleRegenerate() {
+    setRegenerating(true)
+    await onRegenerate()
+    setRegenerating(false)
+    setConfirmRegen(false)
+  }
   const text = `I've visited ${visitedCount} countr${visitedCount === 1 ? 'y' : 'ies'} around the world 🌍 Check out my travel map:`
 
   const platforms = [
@@ -62,6 +75,8 @@ export default function ShareModal({ url, visitedCount, onClose }: ShareModalPro
 
   function copyLink() {
     navigator.clipboard.writeText(url)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   const hasNativeShare = typeof navigator !== 'undefined' && !!navigator.share
@@ -79,19 +94,50 @@ export default function ShareModal({ url, visitedCount, onClose }: ShareModalPro
               {visitedCount} countr{visitedCount === 1 ? 'y' : 'ies'} visited
             </p>
           </div>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-300 text-xl leading-none">×</button>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-300 text-xl leading-none mt-0.5">×</button>
         </div>
 
         {/* Link row */}
         <div className="flex items-center gap-2 bg-gray-800 rounded-lg px-3 py-2.5 border border-gray-700">
-          <span className="flex-1 text-sm text-gray-300 truncate">{url}</span>
+          <span className="flex-1 text-xs text-gray-400 truncate font-mono">{url}</span>
           <button
             onClick={copyLink}
             className="text-xs text-emerald-400 font-medium hover:text-emerald-300 shrink-0"
           >
-            Copy
+            {copied ? '✓ Copied' : 'Copy'}
           </button>
         </div>
+
+        {/* Regenerate link */}
+        {!confirmRegen ? (
+          <button
+            onClick={() => setConfirmRegen(true)}
+            className="text-xs text-gray-500 hover:text-gray-300 transition-colors text-center w-full"
+          >
+            🔄 Regenerate link (invalidates current link)
+          </button>
+        ) : (
+          <div className="bg-red-950/40 border border-red-800/50 rounded-lg p-3 space-y-2">
+            <p className="text-xs text-red-300 text-center">
+              Anyone with the old link will no longer be able to view your map.
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setConfirmRegen(false)}
+                className="flex-1 py-1.5 text-xs bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRegenerate}
+                disabled={regenerating}
+                className="flex-1 py-1.5 text-xs bg-red-600 text-white rounded-lg hover:bg-red-500 disabled:opacity-50"
+              >
+                {regenerating ? 'Regenerating…' : 'Yes, regenerate'}
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Native share (mobile) */}
         {hasNativeShare && (

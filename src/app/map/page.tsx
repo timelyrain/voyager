@@ -6,7 +6,6 @@ import { createClient } from '@/lib/supabase/client'
 import CountrySelector from '@/components/CountrySelector'
 import BucketListSelector from '@/components/BucketListSelector'
 import StatsPanel from '@/components/StatsPanel'
-import UsernameModal from '@/components/UsernameModal'
 import ShareModal from '@/components/ShareModal'
 import type { User } from '@supabase/supabase-js'
 
@@ -16,9 +15,9 @@ type Panel = 'map' | 'list' | 'bucket' | 'stats'
 
 export default function MapPage() {
   const [user, setUser] = useState<User | null>(null)
-  const [username, setUsername] = useState<string | null>(null)
-  const [showUsernameModal, setShowUsernameModal] = useState(false)
+  const [shareKey, setShareKey] = useState<string | null>(null)
   const [showShareModal, setShowShareModal] = useState(false)
+  const [shareLoading, setShareLoading] = useState(false)
   const [visitedCodes, setVisitedCodes] = useState<Set<string>>(new Set())
   const [bucketCodes, setBucketCodes] = useState<Set<string>>(new Set())
   const [panel, setPanel] = useState<Panel>('map')
@@ -37,7 +36,7 @@ export default function MapPage() {
       const [{ data: visited }, { data: bucket }, { data: profile }] = await Promise.all([
         supabase.from('visited_countries').select('country_code').eq('user_id', user.id),
         supabase.from('bucketlist_countries').select('country_code').eq('user_id', user.id),
-        supabase.from('profiles').select('username').eq('user_id', user.id).maybeSingle(),
+        supabase.from('profiles').select('share_key').eq('user_id', user.id).maybeSingle(),
       ])
 
       if (visited && visited.length === 0) {
@@ -49,8 +48,8 @@ export default function MapPage() {
       if (bucket) {
         setBucketCodes(new Set(bucket.map((r: { country_code: string }) => r.country_code)))
       }
-      if (profile?.username) {
-        setUsername(profile.username)
+      if (profile?.share_key) {
+        setShareKey(profile.share_key)
       }
       setLoaded(true)
     }
@@ -140,9 +139,36 @@ export default function MapPage() {
     setPanel('map')
   }
 
-  function getShareUrl() {
+  function getShareUrl(key: string) {
     const base = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
-    return `${base}/u/${username}`
+    return `${base}/u/${key}`
+  }
+
+  async function handleShareClick() {
+    if (!user) return
+    setShareLoading(true)
+    let key = shareKey
+    if (!key) {
+      const supabase = createClient()
+      const displayName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || ''
+      const { data } = await supabase
+        .from('profiles')
+        .insert({ user_id: user.id, display_name: displayName })
+        .select('share_key')
+        .single()
+      key = data?.share_key ?? null
+      if (key) setShareKey(key)
+    }
+    setShareLoading(false)
+    if (key) setShowShareModal(true)
+  }
+
+  async function handleRegenerate() {
+    if (!user) return
+    const newKey = crypto.randomUUID()
+    const supabase = createClient()
+    await supabase.from('profiles').update({ share_key: newKey }).eq('user_id', user.id)
+    setShareKey(newKey)
   }
 
   async function handleSignOut() {
@@ -166,17 +192,12 @@ export default function MapPage() {
 
   return (
     <div className="flex flex-col h-screen bg-[#0f172a] text-white">
-      {showUsernameModal && user && (
-        <UsernameModal
-          user={user}
-          onSaved={(u) => { setUsername(u); setShowUsernameModal(false); setShowShareModal(true) }}
-        />
-      )}
-      {showShareModal && username && (
+      {showShareModal && shareKey && (
         <ShareModal
-          url={getShareUrl()}
+          url={getShareUrl(shareKey)}
           visitedCount={visitedCodes.size}
           onClose={() => setShowShareModal(false)}
+          onRegenerate={handleRegenerate}
         />
       )}
 
@@ -187,21 +208,13 @@ export default function MapPage() {
           <span className="font-bold text-lg tracking-tight">Voyager</span>
         </div>
         <div className="flex items-center gap-2">
-          {username ? (
-            <button
-              onClick={() => setShowShareModal(true)}
-              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors font-medium"
-            >
-              🔗 Share
-            </button>
-          ) : (
-            <button
-              onClick={() => setShowUsernameModal(true)}
-              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 transition-colors font-medium"
-            >
-              🔗 Get shareable link
-            </button>
-          )}
+          <button
+            onClick={handleShareClick}
+            disabled={shareLoading}
+            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors font-medium disabled:opacity-50"
+          >
+            {shareLoading ? '…' : '🔗 Share'}
+          </button>
           <button
             onClick={handleSignOut}
             className="text-xs text-gray-400 hover:text-white transition-colors px-2 py-1 rounded-md hover:bg-gray-700"

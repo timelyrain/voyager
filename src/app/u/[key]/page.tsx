@@ -4,14 +4,14 @@ import PublicProfileView from './PublicProfileView'
 import type { Metadata } from 'next'
 
 interface Props {
-  params: Promise<{ username: string }>
+  params: Promise<{ key: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { username } = await params
+  const { key } = await params
   const supabase = await createClient()
-  const { data } = await supabase.from('profiles').select('display_name').eq('username', username).single()
-  const name = data?.display_name || username
+  const { data } = await supabase.from('profiles').select('display_name').eq('share_key', key).single()
+  const name = data?.display_name || 'A traveller'
   return {
     title: `${name}'s Travel Map — Voyager`,
     description: `See which countries ${name} has visited on an interactive world map.`,
@@ -19,13 +19,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PublicProfilePage({ params }: Props) {
-  const { username } = await params
+  const { key } = await params
   const supabase = await createClient()
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('user_id, username, display_name')
-    .eq('username', username)
+    .select('user_id, display_name')
+    .eq('share_key', key)
     .single()
 
   if (!profile) notFound()
@@ -37,7 +37,7 @@ export default async function PublicProfilePage({ params }: Props) {
 
   return (
     <PublicProfileView
-      profile={{ username: profile.username, display_name: profile.display_name }}
+      displayName={profile.display_name}
       visitedCodes={(visited || []).map((r: { country_code: string }) => r.country_code)}
       bucketCodes={(bucket || []).map((r: { country_code: string }) => r.country_code)}
     />
