@@ -1,7 +1,5 @@
-import { Pacifico } from 'next/font/google'
+import { pacifico } from '@/lib/fonts'
 import AuthForm from '@/components/AuthForm'
-
-const pacifico = Pacifico({ subsets: ['latin'], weight: '400' })
 
 export default function HomePage() {
   return (
