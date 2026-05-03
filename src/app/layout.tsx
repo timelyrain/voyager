@@ -5,7 +5,7 @@ import './globals.css'
 const geist = Geist({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Voyager — Track countries you have visited',
+  title: 'My Travel Log — Track countries you have visited',
   description: 'Interactive world map to track the countries you have visited.',
 }
 

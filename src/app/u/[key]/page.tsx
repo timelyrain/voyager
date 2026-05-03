@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { data } = await supabase.from('profiles').select('display_name').eq('share_key', key).single()
   const name = data?.display_name || 'A traveller'
   return {
-    title: `${name}'s Travel Map — Voyager`,
+    title: `${name}'s Travel Map — My Travel Log`,
     description: `See which countries ${name} has visited on an interactive world map.`,
   }
 }
