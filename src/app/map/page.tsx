@@ -44,6 +44,7 @@ export default function MapPage() {
         setPanel('list')
       } else if (visited) {
         setVisitedCodes(new Set(visited.map((r: { country_code: string }) => r.country_code)))
+        setPanel('stats')
       }
       if (bucket) {
         setBucketCodes(new Set(bucket.map((r: { country_code: string }) => r.country_code)))
