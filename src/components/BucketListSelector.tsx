@@ -42,7 +42,7 @@ export default function BucketListSelector({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b border-gray-700 space-y-3">
+      <div className="p-4 border-b border-gray-700 space-y-3 overflow-x-hidden">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-white">Places I want to go</h2>
@@ -66,7 +66,7 @@ export default function BucketListSelector({
           placeholder="Search countries…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full px-3 py-2 bg-gray-700 text-white placeholder-gray-400 rounded-lg text-[16px] focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          className="w-full px-3 py-2 bg-gray-700 text-white placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
         />
 
         <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-hide">
