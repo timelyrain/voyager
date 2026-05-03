@@ -254,7 +254,7 @@ export default function MapPage() {
         ].join(', '),
       }} />
 
-      <header className="flex items-center justify-between px-4 py-3 border-b border-gray-800/60 shrink-0 relative z-20 bg-[#0f172a]/70 backdrop-blur-md">
+      <header className="flex items-center justify-between px-4 py-3 border-b border-gray-800/60 shrink-0 relative z-20 bg-[#0f172a]/70 backdrop-blur-md" style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}>
         <div className="flex items-center gap-2">
           <span className="text-xl">🌍</span>
           <span className="font-bold text-lg tracking-tight">My Travel Log</span>

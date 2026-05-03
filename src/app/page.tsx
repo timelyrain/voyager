@@ -2,7 +2,7 @@ import AuthForm from '@/components/AuthForm'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-dvh flex flex-col items-center justify-center px-4 relative overflow-hidden" style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
 
       {/* Night sky gradient */}
       <div className="absolute inset-0" style={{
