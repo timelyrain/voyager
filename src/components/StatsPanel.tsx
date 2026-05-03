@@ -166,8 +166,8 @@ export default function StatsPanel({ visitedCodes, bucketCodes = [], bucketCount
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-2 gap-3">
-        <StatCard label="Countries" value={visitedCount} total={totalCountries} color="emerald" />
-        <StatCard label="Continents" value={continentsVisited} total={6} color="blue" />
+        <StatDial label="Countries" value={visitedCount} total={totalCountries} color="#10b981" />
+        <StatDial label="Continents" value={continentsVisited} total={6} color="#3b82f6" />
       </div>
 
       <div className="bg-gray-800 rounded-xl p-4 flex items-center justify-between">
@@ -249,17 +249,36 @@ export default function StatsPanel({ visitedCodes, bucketCodes = [], bucketCount
   )
 }
 
-function StatCard({
-  label, value, total, color,
-}: {
-  label: string; value: number; total: number; color: 'emerald' | 'blue'
+function StatDial({ label, value, total, color }: {
+  label: string; value: number; total: number; color: string
 }) {
-  const colorMap = { emerald: 'text-emerald-400', blue: 'text-blue-400' }
+  const size = 108
+  const strokeWidth = 8
+  const r = (size - strokeWidth) / 2
+  const circumference = 2 * Math.PI * r
+  const pct = total > 0 ? value / total : 0
+  const offset = circumference * (1 - pct)
+
   return (
-    <div className="bg-gray-800 rounded-xl p-4 text-center">
-      <div className={`text-3xl font-bold ${colorMap[color]}`}>{value}</div>
-      <div className="text-xs text-gray-400 mt-0.5">of {total}</div>
-      <div className="text-xs font-medium text-gray-300 mt-1">{label}</div>
+    <div className="bg-gray-800 rounded-xl p-4 flex flex-col items-center gap-2">
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#374151" strokeWidth={strokeWidth} />
+          <circle
+            cx={size / 2} cy={size / 2} r={r} fill="none"
+            stroke={color} strokeWidth={strokeWidth}
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            strokeLinecap="round"
+            style={{ transition: 'stroke-dashoffset 0.5s ease' }}
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-3xl font-bold text-white leading-none">{value}</span>
+          <span className="text-xs text-gray-400 mt-1">of {total}</span>
+        </div>
+      </div>
+      <span className="text-xs font-medium text-gray-300">{label}</span>
     </div>
   )
 }
