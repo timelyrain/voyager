@@ -6,7 +6,10 @@ export async function GET(request: Request) {
   if (!url) return NextResponse.json({ error: 'missing url' }, { status: 400 })
 
   try {
-    const res = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(url)}`)
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 5000)
+    const res = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(url)}`, { signal: controller.signal })
+    clearTimeout(timeout)
     if (res.ok) {
       const short = (await res.text()).trim()
       if (short.startsWith('https://')) return NextResponse.json({ url: short })

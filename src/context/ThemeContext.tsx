@@ -14,11 +14,16 @@ const ThemeContext = createContext<ThemeContextValue>({
 })
 
 export function ThemeProvider({ children, initialTheme }: { children: React.ReactNode; initialTheme?: ThemeId }) {
-  const [theme, setThemeState] = useState<ThemeId>(initialTheme ?? DEFAULT_THEME)
+  const [theme, setThemeState] = useState<ThemeId>(() => {
+    const id = initialTheme ?? DEFAULT_THEME
+    return THEMES[id] ? id : DEFAULT_THEME
+  })
 
   useEffect(() => {
     if (initialTheme) {
-      applyTheme(initialTheme)
+      const valid = THEMES[initialTheme] ? initialTheme : DEFAULT_THEME
+      applyTheme(valid)
+      setThemeState(valid)
       return
     }
     const saved = (localStorage.getItem('theme') as ThemeId) || DEFAULT_THEME
@@ -31,7 +36,7 @@ export function ThemeProvider({ children, initialTheme }: { children: React.Reac
     const valid = THEMES[id] ? id : DEFAULT_THEME
     applyTheme(valid)
     setThemeState(valid)
-    localStorage.setItem('theme', valid)
+    if (!initialTheme) localStorage.setItem('theme', valid)
   }
 
   return (

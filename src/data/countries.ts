@@ -244,6 +244,10 @@ export function getCountriesByContinent(continent: Continent): Country[] {
   return COUNTRIES.filter((c) => c.continent === continent)
 }
 
+export const CONTINENT_TOTALS: Record<Continent, number> = Object.fromEntries(
+  CONTINENTS.map((c) => [c, getCountriesByContinent(c).length])
+) as Record<Continent, number>
+
 export function groupByContinent(codes: string[]): Record<Continent, number> {
   const result = {} as Record<Continent, number>
   for (const continent of CONTINENTS) {

@@ -68,9 +68,7 @@ export default function ShareModal({ url, visitedCount, onClose, onRegenerate }:
   async function handleNativeShare() {
     try {
       await navigator.share({ title: 'My Travel Map', text, url })
-    } catch {
-      // user cancelled or not supported
-    }
+    } catch {}
   }
 
   function copyLink() {
@@ -97,7 +95,6 @@ export default function ShareModal({ url, visitedCount, onClose, onRegenerate }:
           <button onClick={onClose} className="text-gray-500 hover:text-gray-300 text-xl leading-none mt-0.5">×</button>
         </div>
 
-        {/* Link row */}
         <div className="flex items-center gap-2 bg-gray-800 rounded-lg px-3 py-2.5 border border-gray-700">
           <span className="flex-1 text-xs text-gray-400 truncate font-mono">{url}</span>
           <button
@@ -108,7 +105,6 @@ export default function ShareModal({ url, visitedCount, onClose, onRegenerate }:
           </button>
         </div>
 
-        {/* Regenerate link */}
         {!confirmRegen ? (
           <button
             onClick={() => setConfirmRegen(true)}
@@ -139,7 +135,6 @@ export default function ShareModal({ url, visitedCount, onClose, onRegenerate }:
           </div>
         )}
 
-        {/* Native share (mobile) */}
         {hasNativeShare && (
           <button
             onClick={handleNativeShare}
@@ -152,7 +147,6 @@ export default function ShareModal({ url, visitedCount, onClose, onRegenerate }:
           </button>
         )}
 
-        {/* Platform buttons */}
         <div>
           <p className="text-xs text-gray-500 mb-3 text-center">
             {hasNativeShare ? 'Or share directly to' : 'Share to'}

@@ -16,38 +16,71 @@ const WorldMap = dynamic(() => import('@/components/WorldMap'), { ssr: false })
 
 type Panel = 'map' | 'list' | 'bucket' | 'stats'
 
+function generateShortKey(): string {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
+  const arr = new Uint8Array(10)
+  crypto.getRandomValues(arr)
+  return Array.from(arr, (b) => chars[b % chars.length]).join('')
+}
+
+function getShareUrl(key: string): string {
+  const base = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
+  return `${base}/u/${key}`
+}
+
+async function shortenUrl(longUrl: string): Promise<string> {
+  try {
+    const res = await fetch(`/api/shorten?url=${encodeURIComponent(longUrl)}`)
+    if (res.ok) {
+      const { url } = await res.json()
+      if (url) return url
+    }
+  } catch {}
+  return longUrl
+}
+
+function toggleSet<T>(prev: Set<T>, item: T): Set<T> {
+  const next = new Set(prev)
+  if (next.has(item)) next.delete(item)
+  else next.add(item)
+  return next
+}
+
+async function syncCountryCodes(
+  table: 'visited_countries' | 'bucketlist_countries',
+  currentCodes: Set<string>,
+  userId: string
+): Promise<string[]> {
+  const supabase = createClient()
+  const { data: existing } = await supabase.from(table).select('country_code').eq('user_id', userId)
+  const existingSet = new Set((existing || []).map((r: { country_code: string }) => r.country_code))
+  const toAdd = Array.from(currentCodes).filter((c) => !existingSet.has(c))
+  const toRemove = Array.from(existingSet).filter((c) => !currentCodes.has(c))
+  if (toAdd.length > 0) {
+    await supabase.from(table).insert(toAdd.map((country_code) => ({ user_id: userId, country_code })))
+  }
+  if (toRemove.length > 0) {
+    await supabase.from(table).delete().eq('user_id', userId).in('country_code', toRemove)
+  }
+  return toAdd
+}
+
 export default function MapPage() {
   const { setTheme } = useTheme()
   const [user, setUser] = useState<User | null>(null)
+  const [visitedCodes, setVisitedCodes] = useState<Set<string>>(new Set())
+  const [bucketCodes, setBucketCodes] = useState<Set<string>>(new Set())
+  const [panel, setPanel] = useState<Panel>('map')
   const [shareKey, setShareKey] = useState<string | null>(null)
   const [shareUrl, setShareUrl] = useState<string | null>(null)
   const [showShareModal, setShowShareModal] = useState(false)
   const [shareLoading, setShareLoading] = useState(false)
-  const [sidebarWidth, setSidebarWidth] = useState(288)
-  const dragRef = useRef<{ startX: number; startWidth: number } | null>(null)
-
-  function handleDividerMouseDown(e: React.MouseEvent) {
-    dragRef.current = { startX: e.clientX, startWidth: sidebarWidth }
-    const onMove = (e: MouseEvent) => {
-      if (!dragRef.current) return
-      const next = Math.min(Math.max(dragRef.current.startWidth + e.clientX - dragRef.current.startX, 200), 560)
-      setSidebarWidth(next)
-    }
-    const onUp = () => {
-      dragRef.current = null
-      window.removeEventListener('mousemove', onMove)
-      window.removeEventListener('mouseup', onUp)
-    }
-    window.addEventListener('mousemove', onMove)
-    window.addEventListener('mouseup', onUp)
-  }
-  const [visitedCodes, setVisitedCodes] = useState<Set<string>>(new Set())
-  const [bucketCodes, setBucketCodes] = useState<Set<string>>(new Set())
-  const [panel, setPanel] = useState<Panel>('map')
   const [savingVisited, setSavingVisited] = useState(false)
   const [savingBucket, setSavingBucket] = useState(false)
   const [isFirstVisit, setIsFirstVisit] = useState(false)
   const [loaded, setLoaded] = useState(false)
+  const [sidebarWidth, setSidebarWidth] = useState(288)
+  const dragRef = useRef<{ startX: number; startWidth: number } | null>(null)
 
   useEffect(() => {
     async function load() {
@@ -79,57 +112,22 @@ export default function MapPage() {
     load()
   }, [])
 
-  const toggleVisited = useCallback((code: string) => {
-    setVisitedCodes((prev) => {
-      const next = new Set(prev)
-      if (next.has(code)) next.delete(code)
-      else next.add(code)
-      return next
-    })
-  }, [])
-
-  const toggleBucket = useCallback((code: string) => {
-    setBucketCodes((prev) => {
-      const next = new Set(prev)
-      if (next.has(code)) next.delete(code)
-      else next.add(code)
-      return next
-    })
-  }, [])
+  const toggleVisited = useCallback((code: string) => setVisitedCodes((prev) => toggleSet(prev, code)), [])
+  const toggleBucket = useCallback((code: string) => setBucketCodes((prev) => toggleSet(prev, code)), [])
 
   async function saveVisited() {
     if (!user) return
     setSavingVisited(true)
-    const supabase = createClient()
-    const codes = Array.from(visitedCodes)
-
-    const { data: existing } = await supabase
-      .from('visited_countries').select('country_code').eq('user_id', user.id)
-
-    const existingCodes = new Set((existing || []).map((r: { country_code: string }) => r.country_code))
-    const toAdd = codes.filter((c) => !existingCodes.has(c))
-    const toRemove = Array.from(existingCodes).filter((c) => !visitedCodes.has(c))
-
+    const toAdd = await syncCountryCodes('visited_countries', visitedCodes, user.id)
     if (toAdd.length > 0) {
-      await supabase.from('visited_countries').insert(
-        toAdd.map((country_code) => ({ user_id: user.id, country_code }))
-      )
-    }
-    if (toRemove.length > 0) {
-      await supabase.from('visited_countries').delete()
-        .eq('user_id', user.id).in('country_code', toRemove)
-    }
-
-    if (toAdd.length > 0) {
-      await supabase.from('bucketlist_countries').delete()
-        .eq('user_id', user.id).in('country_code', toAdd)
+      const supabase = createClient()
+      await supabase.from('bucketlist_countries').delete().eq('user_id', user.id).in('country_code', toAdd)
       setBucketCodes((prev) => {
         const next = new Set(prev)
         toAdd.forEach((c) => next.delete(c))
         return next
       })
     }
-
     setSavingVisited(false)
     setIsFirstVisit(false)
     setPanel('map')
@@ -138,51 +136,9 @@ export default function MapPage() {
   async function saveBucket() {
     if (!user) return
     setSavingBucket(true)
-    const supabase = createClient()
-    const codes = Array.from(bucketCodes)
-
-    const { data: existing } = await supabase
-      .from('bucketlist_countries').select('country_code').eq('user_id', user.id)
-
-    const existingCodes = new Set((existing || []).map((r: { country_code: string }) => r.country_code))
-    const toAdd = codes.filter((c) => !existingCodes.has(c))
-    const toRemove = Array.from(existingCodes).filter((c) => !bucketCodes.has(c))
-
-    if (toAdd.length > 0) {
-      await supabase.from('bucketlist_countries').insert(
-        toAdd.map((country_code) => ({ user_id: user.id, country_code }))
-      )
-    }
-    if (toRemove.length > 0) {
-      await supabase.from('bucketlist_countries').delete()
-        .eq('user_id', user.id).in('country_code', toRemove)
-    }
-
+    await syncCountryCodes('bucketlist_countries', bucketCodes, user.id)
     setSavingBucket(false)
     setPanel('map')
-  }
-
-  function getShareUrl(key: string) {
-    const base = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
-    return `${base}/u/${key}`
-  }
-
-  function generateShortKey() {
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
-    const arr = new Uint8Array(10)
-    crypto.getRandomValues(arr)
-    return Array.from(arr, (b) => chars[b % chars.length]).join('')
-  }
-
-  async function shortenUrl(longUrl: string): Promise<string> {
-    try {
-      const res = await fetch(`/api/shorten?url=${encodeURIComponent(longUrl)}`)
-      if (res.ok) {
-        const { url } = await res.json()
-        if (url) return url
-      }
-    } catch {}
-    return longUrl
   }
 
   async function handleShareClick() {
@@ -214,6 +170,7 @@ export default function MapPage() {
     const newKey = generateShortKey()
     const supabase = createClient()
     await supabase.from('profiles').update({ share_key: newKey }).eq('user_id', user.id)
+    setShareUrl(null)
     setShareKey(newKey)
     const url = await shortenUrl(getShareUrl(newKey))
     setShareUrl(url)
@@ -230,9 +187,21 @@ export default function MapPage() {
     window.location.href = '/'
   }
 
-  const handleMapToggle = useCallback((code: string) => {
-    toggleVisited(code)
-  }, [toggleVisited])
+  function handleDividerMouseDown(e: React.MouseEvent) {
+    dragRef.current = { startX: e.clientX, startWidth: sidebarWidth }
+    const onMove = (e: MouseEvent) => {
+      if (!dragRef.current) return
+      const next = Math.min(Math.max(dragRef.current.startWidth + e.clientX - dragRef.current.startX, 200), 560)
+      setSidebarWidth(next)
+    }
+    const onUp = () => {
+      dragRef.current = null
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+    }
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }
 
   if (!loaded) {
     return (
@@ -243,6 +212,7 @@ export default function MapPage() {
   }
 
   const visitedArray = Array.from(visitedCodes)
+  const bucketArray = Array.from(bucketCodes)
 
   return (
     <div className="flex flex-col h-screen bg-[#0f172a] text-white">
@@ -255,7 +225,6 @@ export default function MapPage() {
         />
       )}
 
-      {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-gray-800 shrink-0">
         <div className="flex items-center gap-2">
           <span className="text-xl">🌍</span>
@@ -279,7 +248,6 @@ export default function MapPage() {
         </div>
       </header>
 
-      {/* Desktop layout */}
       <div className="hidden md:flex flex-1 overflow-hidden">
         <div style={{ width: sidebarWidth }} className="shrink-0 flex flex-col overflow-hidden">
           <div className="flex border-b border-gray-800">
@@ -290,7 +258,7 @@ export default function MapPage() {
           <div className="flex-1 overflow-hidden">
             {panel === 'stats' && (
               <div className="p-4 overflow-y-auto h-full">
-                <StatsPanel visitedCodes={visitedArray} bucketCodes={Array.from(bucketCodes)} bucketCount={bucketCodes.size} />
+                <StatsPanel visitedCodes={visitedArray} bucketCodes={bucketArray} bucketCount={bucketCodes.size} />
               </div>
             )}
             {panel === 'list' && (
@@ -313,23 +281,21 @@ export default function MapPage() {
           </div>
         </div>
 
-        {/* Draggable divider */}
         <div
           onMouseDown={handleDividerMouseDown}
           className="w-1 shrink-0 bg-gray-800 hover:bg-emerald-500/60 active:bg-emerald-500 cursor-col-resize transition-colors select-none"
         />
 
         <div className="flex-1 p-3 overflow-hidden">
-          <WorldMap visitedCodes={visitedCodes} bucketCodes={bucketCodes} onToggleCountry={handleMapToggle} />
+          <WorldMap visitedCodes={visitedCodes} bucketCodes={bucketCodes} onToggleCountry={toggleVisited} />
         </div>
       </div>
 
-      {/* Mobile layout */}
       <div className="md:hidden flex-1 overflow-hidden flex flex-col">
         <div className="flex-1 overflow-hidden relative">
           {panel === 'map' && (
             <div className="absolute inset-0 p-2">
-              <WorldMap visitedCodes={visitedCodes} bucketCodes={bucketCodes} onToggleCountry={handleMapToggle} />
+              <WorldMap visitedCodes={visitedCodes} bucketCodes={bucketCodes} onToggleCountry={toggleVisited} />
             </div>
           )}
           {panel === 'list' && (
@@ -355,7 +321,7 @@ export default function MapPage() {
           )}
           {panel === 'stats' && (
             <div className="absolute inset-0 overflow-y-auto p-4">
-              <StatsPanel visitedCodes={visitedArray} bucketCodes={Array.from(bucketCodes)} bucketCount={bucketCodes.size} />
+              <StatsPanel visitedCodes={visitedArray} bucketCodes={bucketArray} bucketCount={bucketCodes.size} />
             </div>
           )}
         </div>

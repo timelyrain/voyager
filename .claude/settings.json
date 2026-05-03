@@ -19,7 +19,11 @@
       "Bash(vercel alias *)",
       "Bash(vercel domains *)",
       "Bash(node scripts/update-rankings.mjs)",
-      "Bash(node scripts/generate-icons.mjs)"
+      "Bash(node scripts/generate-icons.mjs)",
+      "Bash(gh run *)",
+      "Bash(gh deployment *)",
+      "Bash(curl -s \"https://is.gd/create.php?format=simple&url=https://countrytracker.vercel.app/u/test123\" -I)",
+      "Bash(xargs ls *)"
     ],
     "additionalDirectories": [
       "/Users/hongkiatkoh/Developer/voyager/src/app/u",
