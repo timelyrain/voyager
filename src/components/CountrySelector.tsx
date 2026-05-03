@@ -10,6 +10,14 @@ interface CountrySelectorProps {
   saving: boolean
 }
 
+function getFlagEmoji(code: string) {
+  return code
+    .toUpperCase()
+    .split('')
+    .map((c) => String.fromCodePoint(127397 + c.charCodeAt(0)))
+    .join('')
+}
+
 export default function CountrySelector({
   visitedCodes,
   onToggleCountry,
@@ -102,6 +110,7 @@ export default function CountrySelector({
                   </svg>
                 )}
               </div>
+              <span className="text-xl shrink-0">{getFlagEmoji(country.code)}</span>
               <span className={`flex-1 text-sm ${visited ? 'text-white font-medium' : 'text-gray-300'}`}>
                 {country.name}
               </span>
