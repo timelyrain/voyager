@@ -3,22 +3,26 @@
 import dynamic from 'next/dynamic'
 import StatsPanel from '@/components/StatsPanel'
 import { useState } from 'react'
+import { ThemeProvider } from '@/context/ThemeContext'
+import { type ThemeId } from '@/lib/themes'
 
 const WorldMap = dynamic(() => import('@/components/WorldMap'), { ssr: false })
 
 interface PublicProfileViewProps {
   displayName: string | null
+  theme: string | null
   visitedCodes: string[]
   bucketCodes: string[]
 }
 
-export default function PublicProfileView({ displayName, visitedCodes, bucketCodes }: PublicProfileViewProps) {
+export default function PublicProfileView({ displayName, theme, visitedCodes, bucketCodes }: PublicProfileViewProps) {
   const visited = new Set(visitedCodes)
   const bucket = new Set(bucketCodes)
   const [panel, setPanel] = useState<'map' | 'stats'>('map')
   const name = displayName || 'A traveller'
 
   return (
+    <ThemeProvider initialTheme={(theme as ThemeId) || undefined}>
     <div className="flex flex-col h-screen bg-[#0f172a] text-white">
       <header className="flex items-center justify-between px-4 py-3 border-b border-gray-800 shrink-0">
         <div className="flex items-center gap-3">
@@ -67,5 +71,6 @@ export default function PublicProfileView({ displayName, visitedCodes, bucketCod
         </nav>
       </div>
     </div>
+    </ThemeProvider>
   )
 }

@@ -24,7 +24,7 @@ export default async function PublicProfilePage({ params }: Props) {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('user_id, display_name')
+    .select('user_id, display_name, theme')
     .eq('share_key', key)
     .single()
 
@@ -38,6 +38,7 @@ export default async function PublicProfilePage({ params }: Props) {
   return (
     <PublicProfileView
       displayName={profile.display_name}
+      theme={profile.theme}
       visitedCodes={(visited || []).map((r: { country_code: string }) => r.country_code)}
       bucketCodes={(bucket || []).map((r: { country_code: string }) => r.country_code)}
     />
