@@ -9,7 +9,8 @@ const GEO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
 interface WorldMapProps {
   visitedCodes: Set<string>
   bucketCodes: Set<string>
-  onToggleCountry: (code: string) => void
+  onToggleCountry?: (code: string) => void
+  readonly?: boolean
 }
 
 function getCountryFill(isVisited: boolean, inBucket: boolean, hover = false) {
@@ -18,7 +19,7 @@ function getCountryFill(isVisited: boolean, inBucket: boolean, hover = false) {
   return hover ? '#2d5a8e' : '#1e3a5f'
 }
 
-export default function WorldMap({ visitedCodes, bucketCodes, onToggleCountry }: WorldMapProps) {
+export default function WorldMap({ visitedCodes, bucketCodes, onToggleCountry, readonly = false }: WorldMapProps) {
   const [tooltip, setTooltip] = useState<{ name: string; x: number; y: number } | null>(null)
   const [position, setPosition] = useState({ coordinates: [0, 20] as [number, number], zoom: 1 })
 
@@ -63,7 +64,7 @@ export default function WorldMap({ visitedCodes, bucketCodes, onToggleCountry }:
                     }}
                     onMouseLeave={() => setTooltip(null)}
                     onClick={() => {
-                      if (code) onToggleCountry(code)
+                      if (code && !readonly && onToggleCountry) onToggleCountry(code)
                     }}
                     style={{
                       default: {
@@ -71,7 +72,7 @@ export default function WorldMap({ visitedCodes, bucketCodes, onToggleCountry }:
                         stroke: '#0f172a',
                         strokeWidth: 0.3,
                         outline: 'none',
-                        cursor: code ? 'pointer' : 'default',
+                        cursor: code && !readonly ? 'pointer' : 'default',
                         transition: 'fill 0.15s ease',
                       },
                       hover: {
@@ -79,7 +80,7 @@ export default function WorldMap({ visitedCodes, bucketCodes, onToggleCountry }:
                         stroke: '#0f172a',
                         strokeWidth: 0.3,
                         outline: 'none',
-                        cursor: code ? 'pointer' : 'default',
+                        cursor: code && !readonly ? 'pointer' : 'default',
                       },
                       pressed: {
                         fill: isVisited ? '#059669' : inBucket ? '#ca8a04' : '#10b981',

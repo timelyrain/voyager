@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import CountrySelector from '@/components/CountrySelector'
 import BucketListSelector from '@/components/BucketListSelector'
 import StatsPanel from '@/components/StatsPanel'
+import UsernameModal from '@/components/UsernameModal'
 import type { User } from '@supabase/supabase-js'
 
 const WorldMap = dynamic(() => import('@/components/WorldMap'), { ssr: false })
@@ -14,6 +15,9 @@ type Panel = 'map' | 'list' | 'bucket' | 'stats'
 
 export default function MapPage() {
   const [user, setUser] = useState<User | null>(null)
+  const [username, setUsername] = useState<string | null>(null)
+  const [showUsernameModal, setShowUsernameModal] = useState(false)
+  const [copied, setCopied] = useState(false)
   const [visitedCodes, setVisitedCodes] = useState<Set<string>>(new Set())
   const [bucketCodes, setBucketCodes] = useState<Set<string>>(new Set())
   const [panel, setPanel] = useState<Panel>('map')
@@ -29,9 +33,10 @@ export default function MapPage() {
       setUser(user)
       if (!user) return
 
-      const [{ data: visited }, { data: bucket }] = await Promise.all([
+      const [{ data: visited }, { data: bucket }, { data: profile }] = await Promise.all([
         supabase.from('visited_countries').select('country_code').eq('user_id', user.id),
         supabase.from('bucketlist_countries').select('country_code').eq('user_id', user.id),
+        supabase.from('profiles').select('username').eq('user_id', user.id).maybeSingle(),
       ])
 
       if (visited && visited.length === 0) {
@@ -42,6 +47,9 @@ export default function MapPage() {
       }
       if (bucket) {
         setBucketCodes(new Set(bucket.map((r: { country_code: string }) => r.country_code)))
+      }
+      if (profile?.username) {
+        setUsername(profile.username)
       }
       setLoaded(true)
     }
@@ -89,7 +97,6 @@ export default function MapPage() {
         .eq('user_id', user.id).in('country_code', toRemove)
     }
 
-    // Remove newly visited countries from bucket list automatically
     if (toAdd.length > 0) {
       await supabase.from('bucketlist_countries').delete()
         .eq('user_id', user.id).in('country_code', toAdd)
@@ -132,12 +139,18 @@ export default function MapPage() {
     setPanel('map')
   }
 
+  function copyShareLink() {
+    const url = `${window.location.origin}/u/${username}`
+    navigator.clipboard.writeText(url)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   async function handleSignOut() {
     await createClient().auth.signOut()
     window.location.href = '/'
   }
 
-  // clicking a country on the map toggles visited
   const handleMapToggle = useCallback((code: string) => {
     toggleVisited(code)
   }, [toggleVisited])
@@ -154,16 +167,35 @@ export default function MapPage() {
 
   return (
     <div className="flex flex-col h-screen bg-[#0f172a] text-white">
+      {showUsernameModal && user && (
+        <UsernameModal
+          userId={user.id}
+          onSaved={(u) => { setUsername(u); setShowUsernameModal(false) }}
+        />
+      )}
+
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-gray-800 shrink-0">
         <div className="flex items-center gap-2">
           <span className="text-xl">🌍</span>
           <span className="font-bold text-lg tracking-tight">Voyager</span>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="hidden sm:block text-sm text-gray-400 truncate max-w-[180px]">
-            {user?.email}
-          </span>
+        <div className="flex items-center gap-2">
+          {username ? (
+            <button
+              onClick={copyShareLink}
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors font-medium"
+            >
+              {copied ? '✓ Copied!' : '🔗 Share'}
+            </button>
+          ) : (
+            <button
+              onClick={() => setShowUsernameModal(true)}
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 transition-colors font-medium"
+            >
+              🔗 Get shareable link
+            </button>
+          )}
           <button
             onClick={handleSignOut}
             className="text-xs text-gray-400 hover:text-white transition-colors px-2 py-1 rounded-md hover:bg-gray-700"
