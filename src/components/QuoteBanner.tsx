@@ -15,8 +15,8 @@ export default function QuoteBanner() {
     if (diff > 0) setScrollPx(diff + 16) // +16 for right padding
   }, [])
 
-  // ~45px/s reading pace; min 6s so short overflows don't flash
-  const duration = scrollPx > 0 ? Math.max(6, Math.round(scrollPx / 45)) : 0
+  // ~18px/s for a slow, comfortable read; min 8s so short overflows don't feel rushed
+  const duration = scrollPx > 0 ? Math.max(8, Math.round(scrollPx / 18)) : 0
 
   return (
     <div
