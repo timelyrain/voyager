@@ -9,6 +9,7 @@ import BucketListSelector from '@/components/BucketListSelector'
 import StatsPanel from '@/components/StatsPanel'
 import ShareModal from '@/components/ShareModal'
 import ThemeSelector from '@/components/ThemeSelector'
+import QuoteBanner from '@/components/QuoteBanner'
 import { useTheme } from '@/context/ThemeContext'
 import { type ThemeId } from '@/lib/themes'
 import type { User } from '@supabase/supabase-js'
@@ -277,6 +278,8 @@ export default function MapPage() {
           </button>
         </div>
       </header>
+
+      <QuoteBanner />
 
       <div className="hidden md:flex flex-1 overflow-hidden relative z-10">
         <div style={{ width: sidebarWidth }} className="shrink-0 flex flex-col overflow-hidden bg-gray-900/30 backdrop-blur-md">
