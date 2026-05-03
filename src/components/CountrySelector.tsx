@@ -25,6 +25,7 @@ export default function CountrySelector({
   saving,
 }: CountrySelectorProps) {
   const [search, setSearch] = useState('')
+  const [focused, setFocused] = useState(false)
   const [activeContinent, setActiveContinent] = useState<Continent | 'All'>('All')
 
   const filtered = useMemo(() => {
@@ -58,13 +59,41 @@ export default function CountrySelector({
           </button>
         </div>
 
-        <input
-          type="text"
-          placeholder="Search countries…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full px-3 py-2 bg-gray-700 text-white placeholder-gray-400 rounded-lg text-sm focus:outline-none theme-ring"
-        />
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search countries…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            className="w-full px-3 py-2 bg-gray-700 text-white placeholder-gray-400 rounded-lg text-sm focus:outline-none theme-ring"
+          />
+          {focused && search.trim().length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-1 z-30 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl overflow-hidden max-h-56 overflow-y-auto">
+              {filtered.length === 0 ? (
+                <p className="text-center text-gray-500 py-4 text-sm">No countries found</p>
+              ) : (
+                filtered.slice(0, 8).map((country) => {
+                  const visited = visitedCodes.has(country.code)
+                  return (
+                    <button
+                      key={country.code}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => { onToggleCountry(country.code); setSearch('') }}
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-700 transition-colors text-left ${visited ? 'theme-row-selected' : ''}`}
+                    >
+                      <span className="text-lg shrink-0">{getFlagEmoji(country.code)}</span>
+                      <span className={`flex-1 text-sm ${visited ? 'text-white font-medium' : 'text-gray-200'}`}>{country.name}</span>
+                      <span className="text-xs text-gray-500 shrink-0">{country.continent}</span>
+                      {visited && <span className="theme-text text-xs font-bold shrink-0">✓</span>}
+                    </button>
+                  )
+                })
+              )}
+            </div>
+          )}
+        </div>
 
         <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-hide">
           {(['All', ...CONTINENTS] as const).map((c) => (
