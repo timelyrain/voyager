@@ -346,7 +346,7 @@ function TabButton({
 }: {
   active: boolean; onClick: () => void; children: React.ReactNode; yellow?: boolean
 }) {
-  const activeColor = yellow ? 'text-yellow-400 border-b-2 border-yellow-400' : 'text-emerald-400 border-b-2 border-emerald-400'
+  const activeColor = yellow ? 'text-yellow-400 border-b-2 border-yellow-400' : 'text-red-400 border-b-2 border-red-500'
   return (
     <button
       onClick={onClick}
@@ -364,7 +364,7 @@ function MobileNavButton({
 }: {
   active: boolean; onClick: () => void; icon: string; label: string; yellow?: boolean
 }) {
-  const activeColor = yellow ? 'text-yellow-400' : 'text-emerald-400'
+  const activeColor = yellow ? 'text-yellow-400' : 'text-red-400'
   return (
     <button
       onClick={onClick}

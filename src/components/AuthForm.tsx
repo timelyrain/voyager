@@ -64,9 +64,9 @@ export default function AuthForm() {
       </button>
 
       <div className="flex items-center gap-3">
-        <div className="flex-1 h-px bg-gray-200" />
-        <span className="text-sm text-gray-400">or</span>
-        <div className="flex-1 h-px bg-gray-200" />
+        <div className="flex-1 h-px bg-gray-700" />
+        <span className="text-sm text-gray-500">or</span>
+        <div className="flex-1 h-px bg-gray-700" />
       </div>
 
       <form onSubmit={handleEmailAuth} className="space-y-3">
@@ -76,7 +76,7 @@ export default function AuthForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-800/80 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600"
         />
         <input
           type="password"
@@ -84,14 +84,14 @@ export default function AuthForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-800/80 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600"
         />
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        {message && <p className="text-sm text-emerald-600">{message}</p>}
+        {error && <p className="text-sm text-red-400">{error}</p>}
+        {message && <p className="text-sm text-amber-400">{message}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-emerald-500 text-white rounded-xl font-medium hover:bg-emerald-600 transition-colors disabled:opacity-50"
+          className="w-full py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
         >
           {loading ? 'Loading…' : mode === 'login' ? 'Sign In' : 'Create Account'}
         </button>
@@ -101,7 +101,7 @@ export default function AuthForm() {
         {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
         <button
           onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); setMessage('') }}
-          className="text-emerald-600 font-medium hover:underline"
+          className="text-red-400 font-medium hover:underline"
         >
           {mode === 'login' ? 'Sign up' : 'Sign in'}
         </button>

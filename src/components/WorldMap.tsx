@@ -14,7 +14,7 @@ interface WorldMapProps {
 }
 
 function getCountryFill(isVisited: boolean, inBucket: boolean, hover = false) {
-  if (isVisited) return hover ? '#34d399' : '#10b981'
+  if (isVisited) return hover ? '#ef4444' : '#dc2626'
   if (inBucket) return hover ? '#fde047' : '#eab308'
   return hover ? '#2d5a8e' : '#1e3a5f'
 }
@@ -83,7 +83,7 @@ export default function WorldMap({ visitedCodes, bucketCodes, onToggleCountry, r
                         cursor: code && !readonly ? 'pointer' : 'default',
                       },
                       pressed: {
-                        fill: isVisited ? '#059669' : inBucket ? '#ca8a04' : '#10b981',
+                        fill: isVisited ? '#b91c1c' : inBucket ? '#ca8a04' : '#dc2626',
                         outline: 'none',
                       },
                     }}
@@ -107,7 +107,7 @@ export default function WorldMap({ visitedCodes, bucketCodes, onToggleCountry, r
       {/* Map legend */}
       <div className="absolute bottom-4 left-4 flex flex-col gap-1.5 bg-gray-900/80 rounded-lg px-3 py-2 text-xs">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-sm bg-emerald-500" />
+          <div className="w-3 h-3 rounded-sm bg-red-600" />
           <span className="text-gray-300">Visited</span>
         </div>
         <div className="flex items-center gap-2">

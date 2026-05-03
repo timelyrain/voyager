@@ -166,7 +166,7 @@ export default function StatsPanel({ visitedCodes, bucketCodes = [], bucketCount
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-2 gap-3">
-        <StatDial label="Countries" value={visitedCount} total={totalCountries} color="#10b981" />
+        <StatDial label="Countries" value={visitedCount} total={totalCountries} color="#dc2626" />
         <StatDial label="Continents" value={continentsVisited} total={6} color="#3b82f6" />
       </div>
 
@@ -183,11 +183,11 @@ export default function StatsPanel({ visitedCodes, bucketCodes = [], bucketCount
       <div>
         <div className="flex justify-between items-center mb-2">
           <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">World coverage</span>
-          <span className="text-sm font-bold text-emerald-400">{percentage}%</span>
+          <span className="text-sm font-bold text-red-400">{percentage}%</span>
         </div>
         <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
           <div
-            className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+            className="h-full bg-red-600 rounded-full transition-all duration-500"
             style={{ width: `${percentage}%` }}
           />
         </div>
@@ -215,17 +215,18 @@ export default function StatsPanel({ visitedCodes, bucketCodes = [], bucketCount
           {achievements.map((a) => (
             <div
               key={a.title}
-              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border transition-all ${
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all ${
                 a.unlocked
-                  ? 'bg-gray-800 border-gray-700'
-                  : 'bg-gray-800/30 border-gray-800/50 opacity-35'
+                  ? 'bg-red-950/30 border-2 border-dashed border-red-700/60'
+                  : 'bg-gray-800/20 border border-gray-800/40 opacity-25'
               }`}
             >
               <span className="text-xl shrink-0">{a.emoji}</span>
               <div className="min-w-0">
-                <div className="text-xs font-semibold text-white leading-tight truncate">{a.title}</div>
-                <div className="text-[10px] text-gray-400 leading-tight mt-0.5 truncate">{a.desc}</div>
+                <div className={`text-xs font-bold leading-tight truncate ${a.unlocked ? 'text-red-100' : 'text-gray-400'}`}>{a.title}</div>
+                <div className="text-[10px] text-gray-500 leading-tight mt-0.5 truncate">{a.desc}</div>
               </div>
+              {a.unlocked && <span className="ml-auto text-red-500 text-xs font-bold shrink-0">✓</span>}
             </div>
           ))}
         </div>
