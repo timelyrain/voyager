@@ -215,7 +215,7 @@ export default function MapPage() {
   const bucketArray = Array.from(bucketCodes)
 
   return (
-    <div className="flex flex-col h-screen bg-[#0f172a] text-white">
+    <div className="flex flex-col h-screen text-white relative overflow-hidden">
       {showShareModal && shareKey && (
         <ShareModal
           url={shareUrl || getShareUrl(shareKey)}
@@ -225,7 +225,36 @@ export default function MapPage() {
         />
       )}
 
-      <header className="flex items-center justify-between px-4 py-3 border-b border-gray-800 shrink-0">
+      {/* Night sky wallpaper */}
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background: 'linear-gradient(180deg, #010409 0%, #040d24 18%, #0a1e4a 42%, #132344 55%, #0e1a38 70%, #0f172a 84%, #060f1c 100%)',
+      }} />
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background: 'radial-gradient(ellipse 160% 28% at 50% 100%, rgba(245,158,11,0.12) 0%, rgba(220,38,38,0.05) 30%, rgba(99,102,241,0.04) 55%, transparent 72%)',
+      }} />
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background: 'radial-gradient(ellipse 55% 85% at -8% 25%, rgba(99,102,241,0.09) 0%, transparent 60%)',
+      }} />
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background: 'radial-gradient(ellipse 55% 85% at 108% 20%, rgba(59,130,246,0.07) 0%, transparent 60%)',
+      }} />
+      <div className="absolute inset-0 pointer-events-none" style={{
+        backgroundImage: [
+          'radial-gradient(1px 1px at 8% 10%, rgba(255,255,255,0.9), transparent)',
+          'radial-gradient(1.5px 1.5px at 22% 6%, rgba(255,255,255,0.7), transparent)',
+          'radial-gradient(1px 1px at 38% 14%, rgba(200,220,255,0.8), transparent)',
+          'radial-gradient(1px 1px at 53% 5%, rgba(255,255,255,0.6), transparent)',
+          'radial-gradient(1.5px 1.5px at 68% 11%, rgba(255,255,255,0.85), transparent)',
+          'radial-gradient(1px 1px at 79% 8%, rgba(200,220,255,0.7), transparent)',
+          'radial-gradient(1px 1px at 91% 16%, rgba(255,255,255,0.5), transparent)',
+          'radial-gradient(1px 1px at 14% 24%, rgba(255,255,255,0.4), transparent)',
+          'radial-gradient(1px 1px at 46% 20%, rgba(255,255,255,0.45), transparent)',
+          'radial-gradient(1.5px 1.5px at 62% 18%, rgba(200,220,255,0.4), transparent)',
+          'radial-gradient(1px 1px at 85% 27%, rgba(255,255,255,0.35), transparent)',
+        ].join(', '),
+      }} />
+
+      <header className="flex items-center justify-between px-4 py-3 border-b border-gray-800/60 shrink-0 relative z-10 bg-[#0f172a]/70 backdrop-blur-md">
         <div className="flex items-center gap-2">
           <span className="text-xl">🌍</span>
           <span className="font-bold text-lg tracking-tight">My Travel Log</span>
@@ -248,8 +277,8 @@ export default function MapPage() {
         </div>
       </header>
 
-      <div className="hidden md:flex flex-1 overflow-hidden">
-        <div style={{ width: sidebarWidth }} className="shrink-0 flex flex-col overflow-hidden">
+      <div className="hidden md:flex flex-1 overflow-hidden relative z-10">
+        <div style={{ width: sidebarWidth }} className="shrink-0 flex flex-col overflow-hidden bg-gray-900/50 backdrop-blur-sm">
           <div className="flex border-b border-gray-800">
             <TabButton active={panel === 'stats'} onClick={() => setPanel('stats')}>Stats</TabButton>
             <TabButton active={panel === 'list'} onClick={() => setPanel('list')}>Countries</TabButton>
@@ -291,7 +320,7 @@ export default function MapPage() {
         </div>
       </div>
 
-      <div className="md:hidden flex-1 overflow-hidden flex flex-col">
+      <div className="md:hidden flex-1 overflow-hidden flex flex-col relative z-10">
         <div className="flex-1 overflow-hidden relative">
           {panel === 'map' && (
             <div className="absolute inset-0 p-2">
@@ -299,7 +328,7 @@ export default function MapPage() {
             </div>
           )}
           {panel === 'list' && (
-            <div className="absolute inset-0 overflow-hidden flex flex-col">
+            <div className="absolute inset-0 overflow-hidden flex flex-col bg-gray-900/60 backdrop-blur-sm">
               <CountrySelector
                 visitedCodes={visitedCodes}
                 onToggleCountry={toggleVisited}
@@ -309,7 +338,7 @@ export default function MapPage() {
             </div>
           )}
           {panel === 'bucket' && (
-            <div className="absolute inset-0 overflow-hidden flex flex-col">
+            <div className="absolute inset-0 overflow-hidden flex flex-col bg-gray-900/60 backdrop-blur-sm">
               <BucketListSelector
                 visitedCodes={visitedCodes}
                 bucketCodes={bucketCodes}
@@ -320,13 +349,13 @@ export default function MapPage() {
             </div>
           )}
           {panel === 'stats' && (
-            <div className="absolute inset-0 overflow-y-auto p-4">
+            <div className="absolute inset-0 overflow-y-auto p-4 bg-gray-900/60 backdrop-blur-sm">
               <StatsPanel visitedCodes={visitedArray} bucketCodes={bucketArray} bucketCount={bucketCodes.size} />
             </div>
           )}
         </div>
 
-        <nav className="shrink-0 flex border-t border-gray-800 bg-gray-900">
+        <nav className="shrink-0 flex border-t border-gray-800/60 bg-gray-900/80 backdrop-blur-md">
           <MobileNavButton active={panel === 'map'} onClick={() => setPanel('map')} icon="🗺️" label="Map" />
           <MobileNavButton active={panel === 'list'} onClick={() => setPanel('list')} icon="✈️" label="Countries" />
           <MobileNavButton active={panel === 'bucket'} onClick={() => setPanel('bucket')} icon="⭐" label="Bucket" yellow />
@@ -335,7 +364,7 @@ export default function MapPage() {
       </div>
 
       {isFirstVisit && panel === 'list' && (
-        <div className="absolute bottom-20 md:hidden left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs px-4 py-2 rounded-full shadow-lg pointer-events-none whitespace-nowrap">
+        <div className="absolute bottom-20 md:hidden left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs px-4 py-2 rounded-full shadow-lg pointer-events-none whitespace-nowrap z-20">
           Tap countries you have visited, then press Done
         </div>
       )}
