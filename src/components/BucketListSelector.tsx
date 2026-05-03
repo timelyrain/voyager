@@ -66,7 +66,7 @@ export default function BucketListSelector({
           placeholder="Search countries…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full px-3 py-2 bg-gray-700 text-white placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          className="w-full px-3 py-2 bg-gray-700 text-white placeholder-gray-400 rounded-lg text-[16px] focus:outline-none focus:ring-2 focus:ring-yellow-500"
         />
 
         <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-hide">
