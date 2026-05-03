@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import CountrySelector from '@/components/CountrySelector'
 import BucketListSelector from '@/components/BucketListSelector'
@@ -18,6 +18,24 @@ export default function MapPage() {
   const [shareKey, setShareKey] = useState<string | null>(null)
   const [showShareModal, setShowShareModal] = useState(false)
   const [shareLoading, setShareLoading] = useState(false)
+  const [sidebarWidth, setSidebarWidth] = useState(288)
+  const dragRef = useRef<{ startX: number; startWidth: number } | null>(null)
+
+  function handleDividerMouseDown(e: React.MouseEvent) {
+    dragRef.current = { startX: e.clientX, startWidth: sidebarWidth }
+    const onMove = (e: MouseEvent) => {
+      if (!dragRef.current) return
+      const next = Math.min(Math.max(dragRef.current.startWidth + e.clientX - dragRef.current.startX, 200), 560)
+      setSidebarWidth(next)
+    }
+    const onUp = () => {
+      dragRef.current = null
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+    }
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }
   const [visitedCodes, setVisitedCodes] = useState<Set<string>>(new Set())
   const [bucketCodes, setBucketCodes] = useState<Set<string>>(new Set())
   const [panel, setPanel] = useState<Panel>('map')
@@ -227,7 +245,7 @@ export default function MapPage() {
 
       {/* Desktop layout */}
       <div className="hidden md:flex flex-1 overflow-hidden">
-        <div className="w-72 shrink-0 border-r border-gray-800 flex flex-col overflow-hidden">
+        <div style={{ width: sidebarWidth }} className="shrink-0 flex flex-col overflow-hidden">
           <div className="flex border-b border-gray-800">
             <TabButton active={panel === 'stats'} onClick={() => setPanel('stats')}>Stats</TabButton>
             <TabButton active={panel === 'list'} onClick={() => setPanel('list')}>Countries</TabButton>
@@ -259,7 +277,13 @@ export default function MapPage() {
           </div>
         </div>
 
-        <div className="flex-1 p-3">
+        {/* Draggable divider */}
+        <div
+          onMouseDown={handleDividerMouseDown}
+          className="w-1 shrink-0 bg-gray-800 hover:bg-emerald-500/60 active:bg-emerald-500 cursor-col-resize transition-colors select-none"
+        />
+
+        <div className="flex-1 p-3 overflow-hidden">
           <WorldMap visitedCodes={visitedCodes} bucketCodes={bucketCodes} onToggleCountry={handleMapToggle} />
         </div>
       </div>
