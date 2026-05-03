@@ -21,6 +21,9 @@ export default function HomePage() {
         </p>
       </div>
       <AuthForm />
+      <footer className="absolute bottom-4 text-xs text-gray-600">
+        Developed with Claude Code
+      </footer>
     </div>
   )
 }
