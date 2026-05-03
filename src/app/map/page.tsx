@@ -170,7 +170,7 @@ export default function MapPage() {
     <div className="flex flex-col h-screen bg-[#0f172a] text-white">
       {showUsernameModal && user && (
         <UsernameModal
-          userId={user.id}
+          user={user}
           onSaved={(u) => { setUsername(u); setShowUsernameModal(false) }}
         />
       )}
