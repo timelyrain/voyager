@@ -205,7 +205,7 @@ export default function MapPage() {
 
   if (!loaded) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0f172a]">
+      <div className="flex items-center justify-center min-h-dvh bg-[#0f172a]">
         <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
       </div>
     )
@@ -215,7 +215,7 @@ export default function MapPage() {
   const bucketArray = Array.from(bucketCodes)
 
   return (
-    <div className="flex flex-col h-screen text-white relative overflow-hidden">
+    <div className="flex flex-col h-dvh text-white relative overflow-hidden">
       {showShareModal && shareKey && (
         <ShareModal
           url={shareUrl || getShareUrl(shareKey)}
@@ -355,7 +355,7 @@ export default function MapPage() {
           )}
         </div>
 
-        <nav className="shrink-0 flex border-t border-gray-800/60 bg-gray-900/80 backdrop-blur-md">
+        <nav className="shrink-0 flex border-t border-gray-800/60 bg-gray-900/80 backdrop-blur-md" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
           <MobileNavButton active={panel === 'map'} onClick={() => setPanel('map')} icon="🗺️" label="Map" />
           <MobileNavButton active={panel === 'list'} onClick={() => setPanel('list')} icon="✈️" label="Countries" />
           <MobileNavButton active={panel === 'bucket'} onClick={() => setPanel('bucket')} icon="⭐" label="Bucket" yellow />
