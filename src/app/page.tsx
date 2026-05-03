@@ -22,7 +22,7 @@ export default function HomePage() {
       </div>
       <AuthForm />
       <footer className="absolute bottom-4 text-xs text-gray-600">
-        Co-developed with Claude Code, UN World Tourism Organization
+        Co-developed with Claude Code
       </footer>
     </div>
   )
