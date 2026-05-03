@@ -81,7 +81,7 @@ export default function HomePage() {
       </div>
 
       <footer className="absolute bottom-4 text-xs text-gray-600 z-10">
-        Co-developed with Claude Code
+        a tribute to Anthony Bourdain
       </footer>
     </div>
   )
