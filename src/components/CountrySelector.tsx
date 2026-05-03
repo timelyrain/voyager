@@ -66,8 +66,8 @@ export default function CountrySelector({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            className="w-full px-3 py-2 bg-gray-700 text-white placeholder-gray-400 rounded-lg text-sm focus:outline-none theme-ring"
+            onBlur={() => { setFocused(false); window.scrollTo(0, 0) }}
+            className="w-full px-3 py-2 bg-gray-700 text-white placeholder-gray-400 rounded-lg text-[16px] focus:outline-none theme-ring"
           />
           {focused && search.trim().length > 0 && (
             <div className="absolute top-full left-0 right-0 mt-1 z-30 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl overflow-hidden max-h-56 overflow-y-auto">
