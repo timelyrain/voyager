@@ -166,7 +166,7 @@ export default function StatsPanel({ visitedCodes, bucketCodes = [], bucketCount
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-2 gap-3">
-        <StatDial label="Countries" value={visitedCount} total={totalCountries} color="#dc2626" />
+        <StatDial label="Countries" value={visitedCount} total={totalCountries} color="var(--accent)" />
         <StatDial label="Continents" value={continentsVisited} total={6} color="#3b82f6" />
       </div>
 
@@ -183,11 +183,11 @@ export default function StatsPanel({ visitedCodes, bucketCodes = [], bucketCount
       <div>
         <div className="flex justify-between items-center mb-2">
           <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">World coverage</span>
-          <span className="text-sm font-bold text-red-400">{percentage}%</span>
+          <span className="text-sm font-bold theme-text">{percentage}%</span>
         </div>
         <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
           <div
-            className="h-full bg-red-600 rounded-full transition-all duration-500"
+            className="h-full theme-bar rounded-full transition-all duration-500"
             style={{ width: `${percentage}%` }}
           />
         </div>
@@ -217,16 +217,16 @@ export default function StatsPanel({ visitedCodes, bucketCodes = [], bucketCount
               key={a.title}
               className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all ${
                 a.unlocked
-                  ? 'bg-red-950/30 border-2 border-dashed border-red-700/60'
+                  ? 'theme-badge-unlocked'
                   : 'bg-gray-800/20 border border-gray-800/40 opacity-25'
               }`}
             >
               <span className="text-xl shrink-0">{a.emoji}</span>
               <div className="min-w-0">
-                <div className={`text-xs font-bold leading-tight truncate ${a.unlocked ? 'text-red-100' : 'text-gray-400'}`}>{a.title}</div>
+                <div className={`text-xs font-bold leading-tight truncate ${a.unlocked ? 'theme-badge-title' : 'text-gray-400'}`}>{a.title}</div>
                 <div className="text-[10px] text-gray-500 leading-tight mt-0.5 truncate">{a.desc}</div>
               </div>
-              {a.unlocked && <span className="ml-auto text-red-500 text-xs font-bold shrink-0">✓</span>}
+              {a.unlocked && <span className="ml-auto theme-badge-check text-xs font-bold shrink-0">✓</span>}
             </div>
           ))}
         </div>
@@ -267,11 +267,11 @@ function StatDial({ label, value, total, color }: {
           <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#374151" strokeWidth={strokeWidth} />
           <circle
             cx={size / 2} cy={size / 2} r={r} fill="none"
-            stroke={color} strokeWidth={strokeWidth}
+            strokeWidth={strokeWidth}
             strokeDasharray={circumference}
             strokeDashoffset={offset}
             strokeLinecap="round"
-            style={{ transition: 'stroke-dashoffset 0.5s ease' }}
+            style={{ stroke: color, transition: 'stroke-dashoffset 0.5s ease' }}
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -301,11 +301,11 @@ function ContinentDial({ continent, visited, total, color }: {
           <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#374151" strokeWidth={strokeWidth} />
           <circle
             cx={size / 2} cy={size / 2} r={r} fill="none"
-            stroke={color} strokeWidth={strokeWidth}
+            strokeWidth={strokeWidth}
             strokeDasharray={circumference}
             strokeDashoffset={offset}
             strokeLinecap="round"
-            style={{ transition: 'stroke-dashoffset 0.5s ease' }}
+            style={{ stroke: color, transition: 'stroke-dashoffset 0.5s ease' }}
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">

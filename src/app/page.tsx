@@ -11,12 +11,12 @@ export default function HomePage() {
     >
       <div className="mb-10 text-center space-y-3">
         <div className="relative inline-flex items-center justify-center w-24 h-24">
-          <div className="absolute inset-0 rounded-full border-2 border-dashed border-red-700/50" />
-          <div className="absolute inset-2 rounded-full border border-red-800/30" />
+          <div className="absolute inset-0 rounded-full border-2 border-dashed" style={{ borderColor: 'var(--accent)', opacity: 0.5 }} />
+          <div className="absolute inset-2 rounded-full border" style={{ borderColor: 'var(--accent)', opacity: 0.3 }} />
           <span className="text-5xl relative z-10">🌍</span>
         </div>
         <div className="space-y-1">
-          <p className="text-xs font-bold tracking-[0.35em] text-red-500 uppercase">Passport</p>
+          <p className="text-xs font-bold tracking-[0.35em] theme-text uppercase">My Travel Log</p>
           <h1 className="text-4xl font-bold text-white tracking-tight">My Travel Log</h1>
         </div>
         <p className="text-gray-400 text-base max-w-sm">

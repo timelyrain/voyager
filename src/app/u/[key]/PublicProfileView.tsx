@@ -25,7 +25,7 @@ export default function PublicProfileView({ displayName, visitedCodes, bucketCod
           <span className="text-xl">🌍</span>
           <span className="font-bold text-lg tracking-tight">{name}'s Travel Map</span>
         </div>
-        <a href="/" className="text-xs text-red-400 hover:text-red-300 font-medium transition-colors">
+        <a href="/" className="text-xs theme-text hover:opacity-80 font-medium transition-colors">
           Make your own →
         </a>
       </header>
@@ -58,7 +58,7 @@ export default function PublicProfileView({ displayName, visitedCodes, bucketCod
               key={p}
               onClick={() => setPanel(p)}
               className={`flex-1 py-3 text-sm font-medium capitalize transition-colors ${
-                panel === p ? 'text-red-400' : 'text-gray-500'
+                panel === p ? 'theme-text' : 'text-gray-500'
               }`}
             >
               {p === 'map' ? '🗺️ Map' : '📊 Stats'}

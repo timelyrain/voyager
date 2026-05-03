@@ -3,6 +3,8 @@
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps'
 import { useState } from 'react'
 import { COUNTRIES } from '@/data/countries'
+import { useTheme } from '@/context/ThemeContext'
+import { THEMES } from '@/lib/themes'
 
 const GEO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
 
@@ -13,15 +15,17 @@ interface WorldMapProps {
   readonly?: boolean
 }
 
-function getCountryFill(isVisited: boolean, inBucket: boolean, hover = false) {
-  if (isVisited) return hover ? '#ef4444' : '#dc2626'
-  if (inBucket) return hover ? '#fde047' : '#eab308'
-  return hover ? '#2d5a8e' : '#1e3a5f'
-}
-
 export default function WorldMap({ visitedCodes, bucketCodes, onToggleCountry, readonly = false }: WorldMapProps) {
+  const { theme } = useTheme()
+  const tc = THEMES[theme]
   const [tooltip, setTooltip] = useState<{ name: string; x: number; y: number } | null>(null)
   const [position, setPosition] = useState({ coordinates: [0, 20] as [number, number], zoom: 1 })
+
+  function getCountryFill(isVisited: boolean, inBucket: boolean, hover = false) {
+    if (isVisited) return hover ? tc.visitedHover : tc.visitedColor
+    if (inBucket) return hover ? tc.bucketHover : tc.bucketColor
+    return hover ? '#2d5a8e' : '#1e3a5f'
+  }
 
   const numericToCode = new Map(COUNTRIES.map((c) => [c.numeric, c.code]))
 
@@ -83,7 +87,7 @@ export default function WorldMap({ visitedCodes, bucketCodes, onToggleCountry, r
                         cursor: code && !readonly ? 'pointer' : 'default',
                       },
                       pressed: {
-                        fill: isVisited ? '#b91c1c' : inBucket ? '#ca8a04' : '#dc2626',
+                        fill: isVisited ? tc.visitedPressed : inBucket ? tc.bucketColor : tc.visitedColor,
                         outline: 'none',
                       },
                     }}
@@ -107,7 +111,7 @@ export default function WorldMap({ visitedCodes, bucketCodes, onToggleCountry, r
       {/* Map legend */}
       <div className="absolute bottom-4 left-4 flex flex-col gap-1.5 bg-gray-900/80 rounded-lg px-3 py-2 text-xs">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-sm bg-red-600" />
+          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: tc.visitedColor }} />
           <span className="text-gray-300">Visited</span>
         </div>
         <div className="flex items-center gap-2">

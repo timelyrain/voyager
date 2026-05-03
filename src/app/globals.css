@@ -11,7 +11,124 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* ─── Theme CSS variables ───────────────────────────────────────────────── */
+
+:root,
+[data-theme="passport"] {
+  --accent:             #dc2626;
+  --accent-hover:       #b91c1c;
+  --accent-text:        #f87171;
+  --visited:            #dc2626;
+  --visited-hover:      #ef4444;
+  --visited-pressed:    #b91c1c;
+  --visited-bg:         rgba(220, 38, 38, 0.08);
+  --bucket:             #eab308;
+  --bucket-hover:       #fde047;
+  --achievement-bg:     rgba(127, 29, 29, 0.3);
+  --achievement-border: rgba(185, 28, 28, 0.6);
+  --achievement-title:  #fee2e2;
+}
+
+[data-theme="vintage"] {
+  --accent:             #d97706;
+  --accent-hover:       #b45309;
+  --accent-text:        #fbbf24;
+  --visited:            #d97706;
+  --visited-hover:      #f59e0b;
+  --visited-pressed:    #b45309;
+  --visited-bg:         rgba(217, 119, 6, 0.08);
+  --bucket:             #0d9488;
+  --bucket-hover:       #14b8a6;
+  --achievement-bg:     rgba(120, 53, 15, 0.3);
+  --achievement-border: rgba(180, 83, 9, 0.6);
+  --achievement-title:  #fef3c7;
+}
+
+[data-theme="airline"] {
+  --accent:             #ca8a04;
+  --accent-hover:       #a16207;
+  --accent-text:        #facc15;
+  --visited:            #ca8a04;
+  --visited-hover:      #eab308;
+  --visited-pressed:    #a16207;
+  --visited-bg:         rgba(202, 138, 4, 0.08);
+  --bucket:             #38bdf8;
+  --bucket-hover:       #7dd3fc;
+  --achievement-bg:     rgba(113, 63, 18, 0.3);
+  --achievement-border: rgba(161, 98, 7, 0.6);
+  --achievement-title:  #fefce8;
+}
+
+[data-theme="journal"] {
+  --accent:             #65a30d;
+  --accent-hover:       #4d7c0f;
+  --accent-text:        #a3e635;
+  --visited:            #65a30d;
+  --visited-hover:      #84cc16;
+  --visited-pressed:    #4d7c0f;
+  --visited-bg:         rgba(101, 163, 13, 0.08);
+  --bucket:             #d97706;
+  --bucket-hover:       #f59e0b;
+  --achievement-bg:     rgba(26, 46, 5, 0.3);
+  --achievement-border: rgba(77, 124, 15, 0.6);
+  --achievement-title:  #f7fee7;
+}
+
+[data-theme="celestial"] {
+  --accent:             #7c3aed;
+  --accent-hover:       #6d28d9;
+  --accent-text:        #a78bfa;
+  --visited:            #7c3aed;
+  --visited-hover:      #8b5cf6;
+  --visited-pressed:    #6d28d9;
+  --visited-bg:         rgba(124, 58, 237, 0.08);
+  --bucket:             #06b6d4;
+  --bucket-hover:       #22d3ee;
+  --achievement-bg:     rgba(46, 16, 101, 0.3);
+  --achievement-border: rgba(109, 40, 217, 0.6);
+  --achievement-title:  #ede9fe;
+}
+
+/* ─── Theme utility classes ─────────────────────────────────────────────── */
+
+.theme-text { color: var(--accent-text); }
+
+.theme-btn {
+  background-color: var(--accent);
+  color: white;
+  transition: background-color 0.15s ease;
+}
+.theme-btn:hover:not(:disabled) { background-color: var(--accent-hover); }
+.theme-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.theme-ring:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.theme-tab-active {
+  color: var(--accent-text);
+  border-bottom: 2px solid var(--accent);
+}
+
+.theme-pill-active { background-color: var(--accent); color: white; }
+
+.theme-bar { background-color: var(--accent); }
+
+.theme-row-selected { background-color: var(--visited-bg); }
+
+.theme-circle-selected {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+.theme-badge-unlocked {
+  background-color: var(--achievement-bg);
+  border: 2px dashed var(--achievement-border);
+}
+.theme-badge-title { color: var(--achievement-title); }
+.theme-badge-check { color: var(--accent-text); }

@@ -52,7 +52,7 @@ export default function CountrySelector({
           <button
             onClick={onDone}
             disabled={saving}
-            className="px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 shrink-0"
+            className="theme-btn px-4 py-2 text-sm font-semibold rounded-lg shrink-0"
           >
             {saving ? 'Saving…' : 'Done'}
           </button>
@@ -63,7 +63,7 @@ export default function CountrySelector({
           placeholder="Search countries…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full px-3 py-2 bg-gray-700 text-white placeholder-gray-400 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+          className="w-full px-3 py-2 bg-gray-700 text-white placeholder-gray-400 rounded-lg text-sm focus:outline-none theme-ring"
         />
 
         <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-hide">
@@ -73,7 +73,7 @@ export default function CountrySelector({
               onClick={() => setActiveContinent(c)}
               className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                 activeContinent === c
-                  ? 'bg-red-600 text-white'
+                  ? 'theme-pill-active'
                   : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
               }`}
             >
@@ -94,14 +94,12 @@ export default function CountrySelector({
               key={country.code}
               onClick={() => onToggleCountry(country.code)}
               className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700/50 transition-colors text-left ${
-                visited ? 'bg-red-900/20' : ''
+                visited ? 'theme-row-selected' : ''
               }`}
             >
               <div
                 className={`w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${
-                  visited
-                    ? 'bg-red-600 border-red-600'
-                    : 'border-gray-500'
+                  visited ? 'theme-circle-selected' : 'border-gray-500'
                 }`}
               >
                 {visited && (

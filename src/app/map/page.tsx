@@ -7,6 +7,9 @@ import CountrySelector from '@/components/CountrySelector'
 import BucketListSelector from '@/components/BucketListSelector'
 import StatsPanel from '@/components/StatsPanel'
 import ShareModal from '@/components/ShareModal'
+import ThemeSelector from '@/components/ThemeSelector'
+import { useTheme } from '@/context/ThemeContext'
+import { type ThemeId } from '@/lib/themes'
 import type { User } from '@supabase/supabase-js'
 
 const WorldMap = dynamic(() => import('@/components/WorldMap'), { ssr: false })
@@ -14,6 +17,7 @@ const WorldMap = dynamic(() => import('@/components/WorldMap'), { ssr: false })
 type Panel = 'map' | 'list' | 'bucket' | 'stats'
 
 export default function MapPage() {
+  const { setTheme } = useTheme()
   const [user, setUser] = useState<User | null>(null)
   const [shareKey, setShareKey] = useState<string | null>(null)
   const [showShareModal, setShowShareModal] = useState(false)
@@ -54,7 +58,7 @@ export default function MapPage() {
       const [{ data: visited }, { data: bucket }, { data: profile }] = await Promise.all([
         supabase.from('visited_countries').select('country_code').eq('user_id', user.id),
         supabase.from('bucketlist_countries').select('country_code').eq('user_id', user.id),
-        supabase.from('profiles').select('share_key').eq('user_id', user.id).maybeSingle(),
+        supabase.from('profiles').select('share_key, theme').eq('user_id', user.id).maybeSingle(),
       ])
 
       if (visited && visited.length === 0) {
@@ -67,9 +71,8 @@ export default function MapPage() {
       if (bucket) {
         setBucketCodes(new Set(bucket.map((r: { country_code: string }) => r.country_code)))
       }
-      if (profile?.share_key) {
-        setShareKey(profile.share_key)
-      }
+      if (profile?.share_key) setShareKey(profile.share_key)
+      if (profile?.theme) setTheme(profile.theme as ThemeId)
       setLoaded(true)
     }
     load()
@@ -190,6 +193,12 @@ export default function MapPage() {
     setShareKey(newKey)
   }
 
+  async function handleThemeSave(theme: ThemeId) {
+    if (!user) return
+    const supabase = createClient()
+    await supabase.from('profiles').upsert({ user_id: user.id, theme }, { onConflict: 'user_id' })
+  }
+
   async function handleSignOut() {
     await createClient().auth.signOut()
     window.location.href = '/'
@@ -227,6 +236,7 @@ export default function MapPage() {
           <span className="font-bold text-lg tracking-tight">My Travel Log</span>
         </div>
         <div className="flex items-center gap-2">
+          <ThemeSelector onSave={handleThemeSave} />
           <button
             onClick={handleShareClick}
             disabled={shareLoading}
@@ -346,7 +356,7 @@ function TabButton({
 }: {
   active: boolean; onClick: () => void; children: React.ReactNode; yellow?: boolean
 }) {
-  const activeColor = yellow ? 'text-yellow-400 border-b-2 border-yellow-400' : 'text-red-400 border-b-2 border-red-500'
+  const activeColor = yellow ? 'text-yellow-400 border-b-2 border-yellow-400' : 'theme-tab-active'
   return (
     <button
       onClick={onClick}
@@ -364,7 +374,7 @@ function MobileNavButton({
 }: {
   active: boolean; onClick: () => void; icon: string; label: string; yellow?: boolean
 }) {
-  const activeColor = yellow ? 'text-yellow-400' : 'text-red-400'
+  const activeColor = yellow ? 'text-yellow-400' : 'theme-text'
   return (
     <button
       onClick={onClick}
