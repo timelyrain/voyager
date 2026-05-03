@@ -254,7 +254,7 @@ export default function MapPage() {
           <div className="flex-1 overflow-hidden">
             {panel === 'stats' && (
               <div className="p-4 overflow-y-auto h-full">
-                <StatsPanel visitedCodes={visitedArray} bucketCount={bucketCodes.size} />
+                <StatsPanel visitedCodes={visitedArray} bucketCodes={Array.from(bucketCodes)} bucketCount={bucketCodes.size} />
               </div>
             )}
             {panel === 'list' && (
@@ -319,7 +319,7 @@ export default function MapPage() {
           )}
           {panel === 'stats' && (
             <div className="absolute inset-0 overflow-y-auto p-4">
-              <StatsPanel visitedCodes={visitedArray} bucketCount={bucketCodes.size} />
+              <StatsPanel visitedCodes={visitedArray} bucketCodes={Array.from(bucketCodes)} bucketCount={bucketCodes.size} />
             </div>
           )}
         </div>
