@@ -4,18 +4,21 @@ import dynamic from 'next/dynamic'
 import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import CountrySelector from '@/components/CountrySelector'
+import BucketListSelector from '@/components/BucketListSelector'
 import StatsPanel from '@/components/StatsPanel'
 import type { User } from '@supabase/supabase-js'
 
 const WorldMap = dynamic(() => import('@/components/WorldMap'), { ssr: false })
 
-type Panel = 'map' | 'list' | 'stats'
+type Panel = 'map' | 'list' | 'bucket' | 'stats'
 
 export default function MapPage() {
   const [user, setUser] = useState<User | null>(null)
   const [visitedCodes, setVisitedCodes] = useState<Set<string>>(new Set())
+  const [bucketCodes, setBucketCodes] = useState<Set<string>>(new Set())
   const [panel, setPanel] = useState<Panel>('map')
-  const [saving, setSaving] = useState(false)
+  const [savingVisited, setSavingVisited] = useState(false)
+  const [savingBucket, setSavingBucket] = useState(false)
   const [isFirstVisit, setIsFirstVisit] = useState(false)
   const [loaded, setLoaded] = useState(false)
 
@@ -26,23 +29,26 @@ export default function MapPage() {
       setUser(user)
       if (!user) return
 
-      const { data } = await supabase
-        .from('visited_countries')
-        .select('country_code')
-        .eq('user_id', user.id)
+      const [{ data: visited }, { data: bucket }] = await Promise.all([
+        supabase.from('visited_countries').select('country_code').eq('user_id', user.id),
+        supabase.from('bucketlist_countries').select('country_code').eq('user_id', user.id),
+      ])
 
-      if (data && data.length === 0) {
+      if (visited && visited.length === 0) {
         setIsFirstVisit(true)
         setPanel('list')
-      } else if (data) {
-        setVisitedCodes(new Set(data.map((r: { country_code: string }) => r.country_code)))
+      } else if (visited) {
+        setVisitedCodes(new Set(visited.map((r: { country_code: string }) => r.country_code)))
+      }
+      if (bucket) {
+        setBucketCodes(new Set(bucket.map((r: { country_code: string }) => r.country_code)))
       }
       setLoaded(true)
     }
     load()
   }, [])
 
-  const toggleCountry = useCallback((code: string) => {
+  const toggleVisited = useCallback((code: string) => {
     setVisitedCodes((prev) => {
       const next = new Set(prev)
       if (next.has(code)) next.delete(code)
@@ -51,16 +57,23 @@ export default function MapPage() {
     })
   }, [])
 
-  async function saveAndShowMap() {
+  const toggleBucket = useCallback((code: string) => {
+    setBucketCodes((prev) => {
+      const next = new Set(prev)
+      if (next.has(code)) next.delete(code)
+      else next.add(code)
+      return next
+    })
+  }, [])
+
+  async function saveVisited() {
     if (!user) return
-    setSaving(true)
+    setSavingVisited(true)
     const supabase = createClient()
     const codes = Array.from(visitedCodes)
 
     const { data: existing } = await supabase
-      .from('visited_countries')
-      .select('country_code')
-      .eq('user_id', user.id)
+      .from('visited_countries').select('country_code').eq('user_id', user.id)
 
     const existingCodes = new Set((existing || []).map((r: { country_code: string }) => r.country_code))
     const toAdd = codes.filter((c) => !existingCodes.has(c))
@@ -72,15 +85,50 @@ export default function MapPage() {
       )
     }
     if (toRemove.length > 0) {
-      await supabase
-        .from('visited_countries')
-        .delete()
-        .eq('user_id', user.id)
-        .in('country_code', toRemove)
+      await supabase.from('visited_countries').delete()
+        .eq('user_id', user.id).in('country_code', toRemove)
     }
 
-    setSaving(false)
+    // Remove newly visited countries from bucket list automatically
+    if (toAdd.length > 0) {
+      await supabase.from('bucketlist_countries').delete()
+        .eq('user_id', user.id).in('country_code', toAdd)
+      setBucketCodes((prev) => {
+        const next = new Set(prev)
+        toAdd.forEach((c) => next.delete(c))
+        return next
+      })
+    }
+
+    setSavingVisited(false)
     setIsFirstVisit(false)
+    setPanel('map')
+  }
+
+  async function saveBucket() {
+    if (!user) return
+    setSavingBucket(true)
+    const supabase = createClient()
+    const codes = Array.from(bucketCodes)
+
+    const { data: existing } = await supabase
+      .from('bucketlist_countries').select('country_code').eq('user_id', user.id)
+
+    const existingCodes = new Set((existing || []).map((r: { country_code: string }) => r.country_code))
+    const toAdd = codes.filter((c) => !existingCodes.has(c))
+    const toRemove = Array.from(existingCodes).filter((c) => !bucketCodes.has(c))
+
+    if (toAdd.length > 0) {
+      await supabase.from('bucketlist_countries').insert(
+        toAdd.map((country_code) => ({ user_id: user.id, country_code }))
+      )
+    }
+    if (toRemove.length > 0) {
+      await supabase.from('bucketlist_countries').delete()
+        .eq('user_id', user.id).in('country_code', toRemove)
+    }
+
+    setSavingBucket(false)
     setPanel('map')
   }
 
@@ -88,6 +136,11 @@ export default function MapPage() {
     await createClient().auth.signOut()
     window.location.href = '/'
   }
+
+  // clicking a country on the map toggles visited
+  const handleMapToggle = useCallback((code: string) => {
+    toggleVisited(code)
+  }, [toggleVisited])
 
   if (!loaded) {
     return (
@@ -122,32 +175,40 @@ export default function MapPage() {
 
       {/* Desktop layout */}
       <div className="hidden md:flex flex-1 overflow-hidden">
-        {/* Sidebar */}
         <div className="w-72 shrink-0 border-r border-gray-800 flex flex-col overflow-hidden">
           <div className="flex border-b border-gray-800">
             <TabButton active={panel === 'stats'} onClick={() => setPanel('stats')}>Stats</TabButton>
             <TabButton active={panel === 'list'} onClick={() => setPanel('list')}>Countries</TabButton>
+            <TabButton active={panel === 'bucket'} onClick={() => setPanel('bucket')} yellow>Bucket</TabButton>
           </div>
           <div className="flex-1 overflow-hidden">
             {panel === 'stats' && (
               <div className="p-4 overflow-y-auto h-full">
-                <StatsPanel visitedCodes={visitedArray} />
+                <StatsPanel visitedCodes={visitedArray} bucketCount={bucketCodes.size} />
               </div>
             )}
             {panel === 'list' && (
               <CountrySelector
                 visitedCodes={visitedCodes}
-                onToggleCountry={toggleCountry}
-                onDone={saveAndShowMap}
-                saving={saving}
+                onToggleCountry={toggleVisited}
+                onDone={saveVisited}
+                saving={savingVisited}
+              />
+            )}
+            {panel === 'bucket' && (
+              <BucketListSelector
+                visitedCodes={visitedCodes}
+                bucketCodes={bucketCodes}
+                onToggleCountry={toggleBucket}
+                onDone={saveBucket}
+                saving={savingBucket}
               />
             )}
           </div>
         </div>
 
-        {/* Map */}
         <div className="flex-1 p-3">
-          <WorldMap visitedCodes={visitedCodes} onToggleCountry={toggleCountry} />
+          <WorldMap visitedCodes={visitedCodes} bucketCodes={bucketCodes} onToggleCountry={handleMapToggle} />
         </div>
       </div>
 
@@ -156,35 +217,45 @@ export default function MapPage() {
         <div className="flex-1 overflow-hidden relative">
           {panel === 'map' && (
             <div className="absolute inset-0 p-2">
-              <WorldMap visitedCodes={visitedCodes} onToggleCountry={toggleCountry} />
+              <WorldMap visitedCodes={visitedCodes} bucketCodes={bucketCodes} onToggleCountry={handleMapToggle} />
             </div>
           )}
           {panel === 'list' && (
             <div className="absolute inset-0 overflow-hidden flex flex-col">
               <CountrySelector
                 visitedCodes={visitedCodes}
-                onToggleCountry={toggleCountry}
-                onDone={saveAndShowMap}
-                saving={saving}
+                onToggleCountry={toggleVisited}
+                onDone={saveVisited}
+                saving={savingVisited}
+              />
+            </div>
+          )}
+          {panel === 'bucket' && (
+            <div className="absolute inset-0 overflow-hidden flex flex-col">
+              <BucketListSelector
+                visitedCodes={visitedCodes}
+                bucketCodes={bucketCodes}
+                onToggleCountry={toggleBucket}
+                onDone={saveBucket}
+                saving={savingBucket}
               />
             </div>
           )}
           {panel === 'stats' && (
             <div className="absolute inset-0 overflow-y-auto p-4">
-              <StatsPanel visitedCodes={visitedArray} />
+              <StatsPanel visitedCodes={visitedArray} bucketCount={bucketCodes.size} />
             </div>
           )}
         </div>
 
-        {/* Bottom nav */}
         <nav className="shrink-0 flex border-t border-gray-800 bg-gray-900">
           <MobileNavButton active={panel === 'map'} onClick={() => setPanel('map')} icon="🗺️" label="Map" />
           <MobileNavButton active={panel === 'list'} onClick={() => setPanel('list')} icon="✈️" label="Countries" />
+          <MobileNavButton active={panel === 'bucket'} onClick={() => setPanel('bucket')} icon="⭐" label="Bucket" yellow />
           <MobileNavButton active={panel === 'stats'} onClick={() => setPanel('stats')} icon="📊" label="Stats" />
         </nav>
       </div>
 
-      {/* First-visit overlay hint */}
       {isFirstVisit && panel === 'list' && (
         <div className="absolute bottom-20 md:hidden left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs px-4 py-2 rounded-full shadow-lg pointer-events-none whitespace-nowrap">
           Tap countries you have visited, then press Done
@@ -194,12 +265,17 @@ export default function MapPage() {
   )
 }
 
-function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+function TabButton({
+  active, onClick, children, yellow,
+}: {
+  active: boolean; onClick: () => void; children: React.ReactNode; yellow?: boolean
+}) {
+  const activeColor = yellow ? 'text-yellow-400 border-b-2 border-yellow-400' : 'text-emerald-400 border-b-2 border-emerald-400'
   return (
     <button
       onClick={onClick}
       className={`flex-1 py-3 text-sm font-medium transition-colors ${
-        active ? 'text-emerald-400 border-b-2 border-emerald-400' : 'text-gray-400 hover:text-gray-200'
+        active ? activeColor : 'text-gray-400 hover:text-gray-200'
       }`}
     >
       {children}
@@ -208,21 +284,16 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
 }
 
 function MobileNavButton({
-  active,
-  onClick,
-  icon,
-  label,
+  active, onClick, icon, label, yellow,
 }: {
-  active: boolean
-  onClick: () => void
-  icon: string
-  label: string
+  active: boolean; onClick: () => void; icon: string; label: string; yellow?: boolean
 }) {
+  const activeColor = yellow ? 'text-yellow-400' : 'text-emerald-400'
   return (
     <button
       onClick={onClick}
       className={`flex-1 flex flex-col items-center justify-center py-3 gap-0.5 transition-colors ${
-        active ? 'text-emerald-400' : 'text-gray-500'
+        active ? activeColor : 'text-gray-500'
       }`}
     >
       <span className="text-lg">{icon}</span>

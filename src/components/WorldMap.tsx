@@ -8,10 +8,17 @@ const GEO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
 
 interface WorldMapProps {
   visitedCodes: Set<string>
+  bucketCodes: Set<string>
   onToggleCountry: (code: string) => void
 }
 
-export default function WorldMap({ visitedCodes, onToggleCountry }: WorldMapProps) {
+function getCountryFill(isVisited: boolean, inBucket: boolean, hover = false) {
+  if (isVisited) return hover ? '#34d399' : '#10b981'
+  if (inBucket) return hover ? '#fde047' : '#eab308'
+  return hover ? '#2d5a8e' : '#1e3a5f'
+}
+
+export default function WorldMap({ visitedCodes, bucketCodes, onToggleCountry }: WorldMapProps) {
   const [tooltip, setTooltip] = useState<{ name: string; x: number; y: number } | null>(null)
   const [position, setPosition] = useState({ coordinates: [0, 20] as [number, number], zoom: 1 })
 
@@ -40,6 +47,7 @@ export default function WorldMap({ visitedCodes, onToggleCountry }: WorldMapProp
               geographies.map((geo) => {
                 const code = getCountryCode(String(geo.id))
                 const isVisited = code ? visitedCodes.has(code) : false
+                const inBucket = code ? bucketCodes.has(code) : false
                 return (
                   <Geography
                     key={geo.rsmKey}
@@ -59,7 +67,7 @@ export default function WorldMap({ visitedCodes, onToggleCountry }: WorldMapProp
                     }}
                     style={{
                       default: {
-                        fill: isVisited ? '#10b981' : '#1e3a5f',
+                        fill: getCountryFill(isVisited, inBucket),
                         stroke: '#0f172a',
                         strokeWidth: 0.3,
                         outline: 'none',
@@ -67,14 +75,14 @@ export default function WorldMap({ visitedCodes, onToggleCountry }: WorldMapProp
                         transition: 'fill 0.15s ease',
                       },
                       hover: {
-                        fill: isVisited ? '#34d399' : '#2d5a8e',
+                        fill: getCountryFill(isVisited, inBucket, true),
                         stroke: '#0f172a',
                         strokeWidth: 0.3,
                         outline: 'none',
                         cursor: code ? 'pointer' : 'default',
                       },
                       pressed: {
-                        fill: isVisited ? '#059669' : '#10b981',
+                        fill: isVisited ? '#059669' : inBucket ? '#ca8a04' : '#10b981',
                         outline: 'none',
                       },
                     }}
@@ -94,6 +102,18 @@ export default function WorldMap({ visitedCodes, onToggleCountry }: WorldMapProp
           {tooltip.name}
         </div>
       )}
+
+      {/* Map legend */}
+      <div className="absolute bottom-4 left-4 flex flex-col gap-1.5 bg-gray-900/80 rounded-lg px-3 py-2 text-xs">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-sm bg-emerald-500" />
+          <span className="text-gray-300">Visited</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-sm bg-yellow-500" />
+          <span className="text-gray-300">Bucket list</span>
+        </div>
+      </div>
 
       <div className="absolute bottom-4 right-4 flex flex-col gap-1">
         <button

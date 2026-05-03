@@ -4,9 +4,10 @@ import { COUNTRIES, CONTINENTS, CONTINENT_COLORS, groupByContinent } from '@/dat
 
 interface StatsPanelProps {
   visitedCodes: string[]
+  bucketCount: number
 }
 
-export default function StatsPanel({ visitedCodes }: StatsPanelProps) {
+export default function StatsPanel({ visitedCodes, bucketCount }: StatsPanelProps) {
   const totalCountries = COUNTRIES.length
   const visitedCount = visitedCodes.length
   const percentage = totalCountries > 0 ? Math.round((visitedCount / totalCountries) * 100) : 0
@@ -22,6 +23,16 @@ export default function StatsPanel({ visitedCodes }: StatsPanelProps) {
       <div className="grid grid-cols-2 gap-3">
         <StatCard label="Countries" value={visitedCount} total={totalCountries} color="emerald" />
         <StatCard label="Continents" value={continentsVisited} total={6} color="blue" />
+      </div>
+
+      <div className="bg-gray-800 rounded-xl p-4 flex items-center justify-between">
+        <div>
+          <div className="text-xs text-gray-400">Bucket list</div>
+          <div className="text-sm font-medium text-gray-200 mt-0.5">
+            {bucketCount} countr{bucketCount === 1 ? 'y' : 'ies'} to visit
+          </div>
+        </div>
+        <div className="text-2xl font-bold text-yellow-400">{bucketCount}</div>
       </div>
 
       <div>
