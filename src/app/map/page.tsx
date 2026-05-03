@@ -20,6 +20,7 @@ export default function MapPage() {
   const { setTheme } = useTheme()
   const [user, setUser] = useState<User | null>(null)
   const [shareKey, setShareKey] = useState<string | null>(null)
+  const [shareUrl, setShareUrl] = useState<string | null>(null)
   const [showShareModal, setShowShareModal] = useState(false)
   const [shareLoading, setShareLoading] = useState(false)
   const [sidebarWidth, setSidebarWidth] = useState(288)
@@ -173,6 +174,17 @@ export default function MapPage() {
     return Array.from(arr, (b) => chars[b % chars.length]).join('')
   }
 
+  async function shortenUrl(longUrl: string): Promise<string> {
+    try {
+      const res = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(longUrl)}`)
+      if (res.ok) {
+        const short = (await res.text()).trim()
+        if (short.startsWith('https://')) return short
+      }
+    } catch {}
+    return longUrl
+  }
+
   async function handleShareClick() {
     if (!user) return
     setShareLoading(true)
@@ -189,6 +201,10 @@ export default function MapPage() {
       key = data?.share_key ?? null
       if (key) setShareKey(key)
     }
+    if (key) {
+      const url = await shortenUrl(getShareUrl(key))
+      setShareUrl(url)
+    }
     setShareLoading(false)
     if (key) setShowShareModal(true)
   }
@@ -199,6 +215,8 @@ export default function MapPage() {
     const supabase = createClient()
     await supabase.from('profiles').update({ share_key: newKey }).eq('user_id', user.id)
     setShareKey(newKey)
+    const url = await shortenUrl(getShareUrl(newKey))
+    setShareUrl(url)
   }
 
   async function handleThemeSave(theme: ThemeId) {
@@ -230,7 +248,7 @@ export default function MapPage() {
     <div className="flex flex-col h-screen bg-[#0f172a] text-white">
       {showShareModal && shareKey && (
         <ShareModal
-          url={getShareUrl(shareKey)}
+          url={shareUrl || getShareUrl(shareKey)}
           visitedCount={visitedCodes.size}
           onClose={() => setShowShareModal(false)}
           onRegenerate={handleRegenerate}
