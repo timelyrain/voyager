@@ -230,13 +230,13 @@ export default function MapPage() {
         background: 'linear-gradient(180deg, #010409 0%, #040d24 18%, #0a1e4a 42%, #132344 55%, #0e1a38 70%, #0f172a 84%, #060f1c 100%)',
       }} />
       <div className="absolute inset-0 pointer-events-none" style={{
-        background: 'radial-gradient(ellipse 160% 28% at 50% 100%, rgba(245,158,11,0.12) 0%, rgba(220,38,38,0.05) 30%, rgba(99,102,241,0.04) 55%, transparent 72%)',
+        background: 'radial-gradient(ellipse 160% 28% at 50% 100%, rgba(245,158,11,0.22) 0%, rgba(220,38,38,0.1) 30%, rgba(99,102,241,0.07) 55%, transparent 72%)',
       }} />
       <div className="absolute inset-0 pointer-events-none" style={{
-        background: 'radial-gradient(ellipse 55% 85% at -8% 25%, rgba(99,102,241,0.09) 0%, transparent 60%)',
+        background: 'radial-gradient(ellipse 60% 90% at -5% 30%, rgba(99,102,241,0.28) 0%, rgba(139,92,246,0.12) 35%, transparent 65%)',
       }} />
       <div className="absolute inset-0 pointer-events-none" style={{
-        background: 'radial-gradient(ellipse 55% 85% at 108% 20%, rgba(59,130,246,0.07) 0%, transparent 60%)',
+        background: 'radial-gradient(ellipse 60% 90% at 105% 20%, rgba(59,130,246,0.22) 0%, rgba(99,102,241,0.1) 35%, transparent 65%)',
       }} />
       <div className="absolute inset-0 pointer-events-none" style={{
         backgroundImage: [
@@ -254,7 +254,7 @@ export default function MapPage() {
         ].join(', '),
       }} />
 
-      <header className="flex items-center justify-between px-4 py-3 border-b border-gray-800/60 shrink-0 relative z-10 bg-[#0f172a]/70 backdrop-blur-md">
+      <header className="flex items-center justify-between px-4 py-3 border-b border-gray-800/60 shrink-0 relative z-20 bg-[#0f172a]/70 backdrop-blur-md">
         <div className="flex items-center gap-2">
           <span className="text-xl">🌍</span>
           <span className="font-bold text-lg tracking-tight">My Travel Log</span>
@@ -278,7 +278,7 @@ export default function MapPage() {
       </header>
 
       <div className="hidden md:flex flex-1 overflow-hidden relative z-10">
-        <div style={{ width: sidebarWidth }} className="shrink-0 flex flex-col overflow-hidden bg-gray-900/50 backdrop-blur-sm">
+        <div style={{ width: sidebarWidth }} className="shrink-0 flex flex-col overflow-hidden bg-gray-900/30 backdrop-blur-md">
           <div className="flex border-b border-gray-800">
             <TabButton active={panel === 'stats'} onClick={() => setPanel('stats')}>Stats</TabButton>
             <TabButton active={panel === 'list'} onClick={() => setPanel('list')}>Countries</TabButton>
@@ -328,7 +328,7 @@ export default function MapPage() {
             </div>
           )}
           {panel === 'list' && (
-            <div className="absolute inset-0 overflow-hidden flex flex-col bg-gray-900/60 backdrop-blur-sm">
+            <div className="absolute inset-0 overflow-hidden flex flex-col bg-gray-900/40 backdrop-blur-md">
               <CountrySelector
                 visitedCodes={visitedCodes}
                 onToggleCountry={toggleVisited}
@@ -338,7 +338,7 @@ export default function MapPage() {
             </div>
           )}
           {panel === 'bucket' && (
-            <div className="absolute inset-0 overflow-hidden flex flex-col bg-gray-900/60 backdrop-blur-sm">
+            <div className="absolute inset-0 overflow-hidden flex flex-col bg-gray-900/40 backdrop-blur-md">
               <BucketListSelector
                 visitedCodes={visitedCodes}
                 bucketCodes={bucketCodes}
@@ -349,7 +349,7 @@ export default function MapPage() {
             </div>
           )}
           {panel === 'stats' && (
-            <div className="absolute inset-0 overflow-y-auto p-4 bg-gray-900/60 backdrop-blur-sm">
+            <div className="absolute inset-0 overflow-y-auto p-4 bg-gray-900/40 backdrop-blur-md">
               <StatsPanel visitedCodes={visitedArray} bucketCodes={bucketArray} bucketCount={bucketCodes.size} />
             </div>
           )}
