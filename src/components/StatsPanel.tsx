@@ -155,27 +155,17 @@ export default function StatsPanel({ visitedCodes, bucketCodes = [], bucketCount
         </div>
       </div>
 
-      <div className="space-y-2">
-        <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">By continent</p>
-        {CONTINENTS.map((continent) => {
-          const visited = byContinent[continent] || 0
-          const total = continentTotals[continent]
-          const pct = total > 0 ? Math.round((visited / total) * 100) : 0
-          return (
-            <div key={continent} className="space-y-1">
-              <div className="flex justify-between text-xs text-gray-300">
-                <span>{continent}</span>
-                <span className="font-medium">{visited}/{total}</span>
-              </div>
-              <div className="w-full h-1.5 bg-gray-700 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{ width: `${pct}%`, backgroundColor: CONTINENT_COLORS[continent] }}
-                />
-              </div>
-            </div>
-          )
-        })}
+      <div>
+        <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">By continent</p>
+        <div className="grid grid-cols-3 gap-4">
+          {CONTINENTS.map((continent) => {
+            const visited = byContinent[continent] || 0
+            const total = continentTotals[continent]
+            return (
+              <ContinentDial key={continent} continent={continent} visited={visited} total={total} color={CONTINENT_COLORS[continent]} />
+            )
+          })}
+        </div>
       </div>
 
       {funFacts.length > 0 && (
@@ -207,6 +197,40 @@ function StatCard({
       <div className={`text-3xl font-bold ${colorMap[color]}`}>{value}</div>
       <div className="text-xs text-gray-400 mt-0.5">of {total}</div>
       <div className="text-xs font-medium text-gray-300 mt-1">{label}</div>
+    </div>
+  )
+}
+
+function ContinentDial({ continent, visited, total, color }: {
+  continent: string; visited: number; total: number; color: string
+}) {
+  const size = 72
+  const strokeWidth = 6
+  const r = (size - strokeWidth) / 2
+  const circumference = 2 * Math.PI * r
+  const pct = total > 0 ? visited / total : 0
+  const offset = circumference * (1 - pct)
+
+  return (
+    <div className="flex flex-col items-center gap-1.5">
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#374151" strokeWidth={strokeWidth} />
+          <circle
+            cx={size / 2} cy={size / 2} r={r} fill="none"
+            stroke={color} strokeWidth={strokeWidth}
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            strokeLinecap="round"
+            style={{ transition: 'stroke-dashoffset 0.5s ease' }}
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-sm font-bold text-white leading-none">{visited}</span>
+          <span className="text-[9px] text-gray-400 leading-none mt-0.5">/{total}</span>
+        </div>
+      </div>
+      <span className="text-[10px] text-gray-400 text-center leading-tight">{continent}</span>
     </div>
   )
 }
