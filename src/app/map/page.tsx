@@ -7,6 +7,7 @@ import CountrySelector from '@/components/CountrySelector'
 import BucketListSelector from '@/components/BucketListSelector'
 import StatsPanel from '@/components/StatsPanel'
 import UsernameModal from '@/components/UsernameModal'
+import ShareModal from '@/components/ShareModal'
 import type { User } from '@supabase/supabase-js'
 
 const WorldMap = dynamic(() => import('@/components/WorldMap'), { ssr: false })
@@ -17,7 +18,7 @@ export default function MapPage() {
   const [user, setUser] = useState<User | null>(null)
   const [username, setUsername] = useState<string | null>(null)
   const [showUsernameModal, setShowUsernameModal] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const [showShareModal, setShowShareModal] = useState(false)
   const [visitedCodes, setVisitedCodes] = useState<Set<string>>(new Set())
   const [bucketCodes, setBucketCodes] = useState<Set<string>>(new Set())
   const [panel, setPanel] = useState<Panel>('map')
@@ -139,12 +140,9 @@ export default function MapPage() {
     setPanel('map')
   }
 
-  function copyShareLink() {
+  function getShareUrl() {
     const base = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
-    const url = `${base}/u/${username}`
-    navigator.clipboard.writeText(url)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    return `${base}/u/${username}`
   }
 
   async function handleSignOut() {
@@ -171,7 +169,14 @@ export default function MapPage() {
       {showUsernameModal && user && (
         <UsernameModal
           user={user}
-          onSaved={(u) => { setUsername(u); setShowUsernameModal(false) }}
+          onSaved={(u) => { setUsername(u); setShowUsernameModal(false); setShowShareModal(true) }}
+        />
+      )}
+      {showShareModal && username && (
+        <ShareModal
+          url={getShareUrl()}
+          visitedCount={visitedCodes.size}
+          onClose={() => setShowShareModal(false)}
         />
       )}
 
@@ -184,10 +189,10 @@ export default function MapPage() {
         <div className="flex items-center gap-2">
           {username ? (
             <button
-              onClick={copyShareLink}
+              onClick={() => setShowShareModal(true)}
               className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors font-medium"
             >
-              {copied ? '✓ Copied!' : '🔗 Share'}
+              🔗 Share
             </button>
           ) : (
             <button
