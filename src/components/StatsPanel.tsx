@@ -14,6 +14,42 @@ interface FunFact {
   body: string
 }
 
+interface Achievement {
+  emoji: string
+  title: string
+  desc: string
+  unlocked: boolean
+}
+
+function generateAchievements(visitedCodes: string[], bucketCodes: string[]): Achievement[] {
+  const byContinent = groupByContinent(visitedCodes)
+  const continentsVisited = CONTINENTS.filter((c) => byContinent[c] > 0).length
+  const visited = visitedCodes.map((c) => getCountryByCode(c)).filter(Boolean) as NonNullable<ReturnType<typeof getCountryByCode>>[]
+  const n = visited.length
+
+  return [
+    // Country count milestones
+    { emoji: '🛂', title: 'First Stamp',     desc: 'Visit your first country',   unlocked: n >= 1 },
+    { emoji: '🎒', title: 'Wanderer',        desc: 'Visit 5 countries',          unlocked: n >= 5 },
+    { emoji: '🧭', title: 'Explorer',        desc: 'Visit 10 countries',         unlocked: n >= 10 },
+    { emoji: '🌍', title: 'Globetrotter',    desc: 'Visit 25 countries',         unlocked: n >= 25 },
+    { emoji: '🌐', title: 'World Traveller', desc: 'Visit 50 countries',         unlocked: n >= 50 },
+    { emoji: '💯', title: 'Century Club',    desc: 'Visit 100 countries',        unlocked: n >= 100 },
+    // Continent milestones
+    { emoji: '✈️', title: 'Bi-Continental',  desc: 'Set foot on 2 continents',   unlocked: continentsVisited >= 2 },
+    { emoji: '🌏', title: 'Multi-Continental', desc: 'Set foot on 4 continents', unlocked: continentsVisited >= 4 },
+    { emoji: '🏆', title: 'Full House',      desc: 'Conquer all 6 continents',   unlocked: continentsVisited >= 6 },
+    // Regional
+    { emoji: '🏯', title: 'Asia Explorer',   desc: '10 countries in Asia',       unlocked: (byContinent['Asia'] || 0) >= 10 },
+    { emoji: '🏰', title: 'European Tour',   desc: '10 countries in Europe',     unlocked: (byContinent['Europe'] || 0) >= 10 },
+    { emoji: '🦁', title: 'Africa Adventurer', desc: '5 countries in Africa',    unlocked: (byContinent['Africa'] || 0) >= 5 },
+    // Special
+    { emoji: '⭐', title: 'Top 5',           desc: 'Visit the 5 most visited countries', unlocked: ['FR','ES','US','CN','IT'].every((c) => visitedCodes.includes(c)) },
+    { emoji: '💎', title: 'Hidden Gem',      desc: 'Visit a country ranked outside top 100', unlocked: visited.some((c) => c.rank > 100) },
+    { emoji: '📝', title: 'Bucket Dreamer',  desc: '10+ countries on bucket list', unlocked: bucketCodes.length >= 10 },
+  ]
+}
+
 function generateFunFacts(visitedCodes: string[], bucketCodes: string[]): FunFact[] {
   const visited = visitedCodes.map((c) => getCountryByCode(c)).filter(Boolean) as NonNullable<ReturnType<typeof getCountryByCode>>[]
   if (visited.length === 0) return []
@@ -124,6 +160,8 @@ export default function StatsPanel({ visitedCodes, bucketCodes = [], bucketCount
   )
   const continentsVisited = CONTINENTS.filter((c) => byContinent[c] > 0).length
   const funFacts = generateFunFacts(visitedCodes, bucketCodes)
+  const achievements = generateAchievements(visitedCodes, bucketCodes)
+  const unlockedCount = achievements.filter((a) => a.unlocked).length
 
   return (
     <div className="space-y-5">
@@ -165,6 +203,31 @@ export default function StatsPanel({ visitedCodes, bucketCodes = [], bucketCount
               <ContinentDial key={continent} continent={continent} visited={visited} total={total} color={CONTINENT_COLORS[continent]} />
             )
           })}
+        </div>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">Achievements</p>
+          <span className="text-xs text-gray-500">{unlockedCount}/{achievements.length}</span>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          {achievements.map((a) => (
+            <div
+              key={a.title}
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border transition-all ${
+                a.unlocked
+                  ? 'bg-gray-800 border-gray-700'
+                  : 'bg-gray-800/30 border-gray-800/50 opacity-35'
+              }`}
+            >
+              <span className="text-xl shrink-0">{a.emoji}</span>
+              <div className="min-w-0">
+                <div className="text-xs font-semibold text-white leading-tight truncate">{a.title}</div>
+                <div className="text-[10px] text-gray-400 leading-tight mt-0.5 truncate">{a.desc}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
