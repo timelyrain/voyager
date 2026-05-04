@@ -51,9 +51,9 @@ export default function HomePage() {
         preserveAspectRatio="none"
         style={{ height: 192 }}
       >
-        {/* Fuji slopes, multi-point rounded ridge at summit */}
+        {/* Fuji slopes, 12-point elliptical arc summit */}
         <path
-          d="M0,220 C300,125 600,18 845,-75 C862,-92 874,-104 884,-112 C893,-118 902,-122 916,-123 C930,-122 939,-118 948,-112 C958,-104 970,-92 987,-75 C1118,18 1298,130 1440,210 L1440,220 Z"
+          d="M0,220 C300,125 590,15 850,-88 L860,-100 870,-108 880,-114 890,-119 902,-122 916,-123 930,-122 942,-119 954,-114 964,-108 974,-102 984,-92 C1034,-42 1280,125 1440,210 L1440,220 Z"
           fill="rgba(3,7,18,0.88)"
         />
         {/* Foreground ridge */}
