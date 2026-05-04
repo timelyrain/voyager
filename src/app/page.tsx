@@ -68,7 +68,7 @@ export default function HomePage() {
           <div className="absolute inset-2 rounded-full border" style={{ borderColor: 'var(--accent)', opacity: 0.3 }} />
           <span className="text-5xl relative z-10">🌍</span>
         </div>
-        <h1 className={`${pacifico.className} text-4xl theme-text`}>My Travel Log</h1>
+        <h1 className={`${pacifico.className} text-4xl theme-text`}>Travelogue</h1>
         <p className="text-gray-400 text-base max-w-sm">
           Track the countries you have visited on an interactive world map.
         </p>
