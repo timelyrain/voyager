@@ -278,23 +278,25 @@ export default function MapPage() {
       <header className="flex items-center justify-between px-4 py-3 shrink-0 relative z-20" style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}>
         <div className="flex items-center gap-2">
           <svg className="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none">
-            {/* Watch bezel */}
             <circle cx="12" cy="12" r="10.5" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.35)" strokeWidth="0.75"/>
-            {/* Triangle at 12 — IWC north marker */}
             <path d="M12 3.5 L13.3 6.2 L10.7 6.2 Z" fill="white"/>
-            {/* Tick marks at 3, 6, 9 */}
             <line x1="20.2" y1="12" x2="21.5" y2="12" stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.5"/>
             <line x1="12" y1="20.2" x2="12" y2="21.5" stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.5"/>
             <line x1="3.8" y1="12" x2="2.5" y2="12" stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.5"/>
-            {/* Hour hand ~10 o'clock */}
-            <line x1="12" y1="12" x2="8.2" y2="7.2" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
-            {/* Minute hand ~12 */}
-            <line x1="12" y1="12" x2="12" y2="4.5" stroke="white" strokeWidth="0.9" strokeLinecap="round"/>
-            {/* Red arrow — IWC signature, pointing to destination ~1-2 o'clock */}
-            <path d="M17 7 L11.5 10.5 L13 12.5 Z" fill="#ef4444"/>
-            {/* Centre pivot */}
-            <circle cx="12" cy="12" r="1.3" fill="white"/>
-            <circle cx="12" cy="12" r="0.5" fill="rgba(0,0,0,0.6)"/>
+            <g transform="rotate(-60, 12, 12)">
+              <line x1="12" y1="12" x2="12" y2="5" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.85"/>
+              <path d="M12 4 L10.5 6 L13.5 6 Z" fill="white" opacity="0.85"/>
+            </g>
+            <g transform="rotate(60, 12, 12)">
+              <line x1="12" y1="12" x2="12" y2="7" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.6"/>
+              <path d="M12 6 L10.5 8 L13.5 8 Z" fill="white" opacity="0.6"/>
+            </g>
+            <g transform="rotate(90, 12, 12)">
+              <line x1="12" y1="12" x2="12" y2="5.5" stroke="#ef4444" strokeWidth="1.2" strokeLinecap="round"/>
+              <path d="M12 4.5 L10.5 6.5 L13.5 6.5 Z" fill="#ef4444"/>
+            </g>
+            <circle cx="12" cy="12" r="1.5" fill="white"/>
+            <circle cx="12" cy="12" r="0.6" fill="rgba(0,0,0,0.7)"/>
           </svg>
           <span className={`${pacifico.className} text-2xl theme-text`}>Travelogue</span>
         </div>
