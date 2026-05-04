@@ -1,4 +1,4 @@
-const CACHE = 'mtl-v1'
+const CACHE = 'travelogue-v2'
 const PRECACHE = ['/', '/map']
 
 self.addEventListener('install', (event) => {
