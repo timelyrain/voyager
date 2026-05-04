@@ -44,24 +44,6 @@ export default function HomePage() {
         ].join(', '),
       }} />
 
-      {/* Mountain silhouette — Fuji-profile, peak right of center */}
-      <svg
-        className="absolute bottom-0 left-0 w-full pointer-events-none"
-        viewBox="0 -120 1440 340"
-        preserveAspectRatio="none"
-        style={{ height: 192 }}
-      >
-        {/* Fuji slopes, 12-point elliptical arc summit */}
-        <path
-          d="M0,220 C300,125 590,15 850,-88 L860,-100 870,-108 880,-114 890,-119 902,-122 916,-123 930,-122 942,-119 954,-114 964,-108 974,-102 984,-92 C1034,-42 1280,125 1440,210 L1440,220 Z"
-          fill="rgba(3,7,18,0.88)"
-        />
-        {/* Foreground ridge */}
-        <path
-          d="M0,220 L0,204 C240,192 480,186 720,189 C960,186 1200,192 1440,204 L1440,220 Z"
-          fill="rgba(4,9,20,0.96)"
-        />
-      </svg>
 
       {/* Content */}
       <div className="relative z-10 mb-10 text-center space-y-3">
