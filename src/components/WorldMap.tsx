@@ -1,10 +1,11 @@
 'use client'
 
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { COUNTRIES } from '@/data/countries'
 import { useTheme } from '@/context/ThemeContext'
 import { THEMES } from '@/lib/themes'
+import { BOURDAIN_COUNTRIES } from '@/data/bourdainCountries'
 
 const GEO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
 
@@ -12,14 +13,27 @@ interface WorldMapProps {
   visitedCodes: Set<string>
   bucketCodes: Set<string>
   onToggleCountry?: (code: string) => void
+  onOpenJournal?: (code: string) => void
   readonly?: boolean
 }
 
-export default function WorldMap({ visitedCodes, bucketCodes, onToggleCountry, readonly = false }: WorldMapProps) {
+export default function WorldMap({ visitedCodes, bucketCodes, onToggleCountry, onOpenJournal, readonly = false }: WorldMapProps) {
   const { theme } = useTheme()
   const tc = THEMES[theme]
-  const [tooltip, setTooltip] = useState<{ name: string; x: number; y: number } | null>(null)
+  const [tooltip, setTooltip] = useState<{ name: string; code: string; x: number; y: number } | null>(null)
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [position, setPosition] = useState({ coordinates: [0, 20] as [number, number], zoom: 1 })
+
+  function getFlagEmoji(code: string) {
+    return [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1A5 + c.charCodeAt(0))).join('')
+  }
+
+  function scheduleHide() {
+    hideTimerRef.current = setTimeout(() => setTooltip(null), 180)
+  }
+  function cancelHide() {
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
+  }
 
   function getCountryFill(isVisited: boolean, inBucket: boolean, hover = false) {
     if (isVisited) return hover ? tc.visitedHover : tc.visitedColor
@@ -58,15 +72,16 @@ export default function WorldMap({ visitedCodes, bucketCodes, onToggleCountry, r
                     key={geo.rsmKey}
                     geography={geo}
                     onMouseEnter={(e) => {
+                      cancelHide()
                       const country = COUNTRIES.find((c) => c.code === code)
                       if (country) {
-                        setTooltip({ name: country.name, x: e.clientX, y: e.clientY })
+                        setTooltip({ name: country.name, code: country.code, x: e.clientX, y: e.clientY })
                       }
                     }}
                     onMouseMove={(e) => {
                       if (tooltip) setTooltip((t) => t && { ...t, x: e.clientX, y: e.clientY })
                     }}
-                    onMouseLeave={() => setTooltip(null)}
+                    onMouseLeave={() => scheduleHide()}
                     onClick={() => {
                       if (code && !readonly && onToggleCountry) onToggleCountry(code)
                     }}
@@ -99,14 +114,48 @@ export default function WorldMap({ visitedCodes, bucketCodes, onToggleCountry, r
         </ZoomableGroup>
       </ComposableMap>
 
-      {tooltip && (
-        <div
-          className="fixed z-50 px-2 py-1 bg-gray-900 text-white text-xs rounded-md pointer-events-none shadow-lg border border-gray-700"
-          style={{ left: tooltip.x + 12, top: tooltip.y - 30 }}
-        >
-          {tooltip.name}
-        </div>
-      )}
+      {tooltip && (() => {
+        const bourdain = BOURDAIN_COUNTRIES[tooltip.code]
+        const isVisited = visitedCodes.has(tooltip.code)
+        const pencilBtn = onOpenJournal && isVisited && (
+          <button
+            onClick={() => { onOpenJournal(tooltip.code); setTooltip(null) }}
+            className="ml-2 p-1 rounded hover:bg-gray-700 text-gray-400 hover:text-white transition-colors shrink-0"
+            title="Add journal"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+            </svg>
+          </button>
+        )
+        return bourdain ? (
+          <div
+            className="fixed z-50 shadow-xl border border-gray-700 bg-gray-900 rounded-lg text-white"
+            style={{ left: tooltip.x + 14, top: tooltip.y - 10, maxWidth: 260 }}
+            onMouseEnter={cancelHide}
+            onMouseLeave={scheduleHide}
+          >
+            <div className="px-3 pt-2.5 pb-1 border-b border-gray-700/60 flex items-center">
+              <span className="font-semibold text-sm flex-1">{getFlagEmoji(tooltip.code)} {tooltip.name}</span>
+              {pencilBtn}
+            </div>
+            <div className="px-3 py-2 space-y-1.5">
+              <p className="text-[11px] text-amber-400 leading-snug">🍽 {bourdain.food}</p>
+              <p className="text-[11px] text-gray-400 italic leading-snug">"{bourdain.quote}"</p>
+            </div>
+          </div>
+        ) : (
+          <div
+            className="fixed z-50 px-2 py-1 bg-gray-900 text-white text-xs rounded-md shadow-lg border border-gray-700 flex items-center"
+            style={{ left: tooltip.x + 12, top: tooltip.y - 30 }}
+            onMouseEnter={cancelHide}
+            onMouseLeave={scheduleHide}
+          >
+            {getFlagEmoji(tooltip.code)} {tooltip.name}
+            {pencilBtn}
+          </div>
+        )
+      })()}
 
       {/* Map legend */}
       <div className="absolute bottom-4 left-4 flex flex-col gap-1.5 bg-gray-900/80 rounded-lg px-3 py-2 text-xs">
@@ -115,7 +164,7 @@ export default function WorldMap({ visitedCodes, bucketCodes, onToggleCountry, r
           <span className="text-gray-300">Visited</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-sm bg-yellow-500" />
+          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: tc.bucketColor }} />
           <span className="text-gray-300">Bucket list</span>
         </div>
       </div>

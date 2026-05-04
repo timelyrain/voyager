@@ -23,14 +23,14 @@ export default function PublicProfileView({ displayName, theme, visitedCodes, bu
 
   return (
     <ThemeProvider initialTheme={(theme || undefined) as ThemeId | undefined}>
-    <div className="flex flex-col h-screen bg-[#0f172a] text-white">
+    <div className="flex flex-col h-[100dvh] bg-[#0f172a] text-white">
       <header className="flex items-center justify-between px-4 py-3 border-b border-gray-800 shrink-0">
         <div className="flex items-center gap-3">
           <span className="text-xl">🌍</span>
           <span className="font-bold text-lg tracking-tight">{name}'s Travel Map</span>
         </div>
-        <a href="/" className="text-xs theme-text hover:opacity-80 font-medium transition-colors">
-          Make your own →
+        <a href="/" className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-semibold transition-colors shadow-sm">
+          Create your own
         </a>
       </header>
 
@@ -65,7 +65,7 @@ export default function PublicProfileView({ displayName, theme, visitedCodes, bu
                 panel === p ? 'theme-text' : 'text-gray-500'
               }`}
             >
-              {p === 'map' ? '🗺️ Map' : '📊 Stats'}
+              {p === 'map' ? '🗺️ Map' : '📊 My Log'}
             </button>
           ))}
         </nav>

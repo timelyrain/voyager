@@ -8,14 +8,11 @@ interface CountrySelectorProps {
   onToggleCountry: (code: string) => void
   onDone: () => void
   saving: boolean
+  onOpenJournal?: (code: string) => void
 }
 
 function getFlagEmoji(code: string) {
-  return code
-    .toUpperCase()
-    .split('')
-    .map((c) => String.fromCodePoint(127397 + c.charCodeAt(0)))
-    .join('')
+  return [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1A5 + c.charCodeAt(0))).join('')
 }
 
 export default function CountrySelector({
@@ -23,6 +20,7 @@ export default function CountrySelector({
   onToggleCountry,
   onDone,
   saving,
+  onOpenJournal,
 }: CountrySelectorProps) {
   const [search, setSearch] = useState('')
   const [focused, setFocused] = useState(false)
@@ -95,12 +93,12 @@ export default function CountrySelector({
           )}
         </div>
 
-        <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-hide">
+        <div className="flex flex-wrap gap-1.5">
           {(['All', ...CONTINENTS] as const).map((c) => (
             <button
               key={c}
               onClick={() => setActiveContinent(c)}
-              className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                 activeContinent === c
                   ? 'theme-pill-active'
                   : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -119,30 +117,43 @@ export default function CountrySelector({
         {filtered.map((country) => {
           const visited = visitedCodes.has(country.code)
           return (
-            <button
+            <div
               key={country.code}
-              onClick={() => onToggleCountry(country.code)}
-              className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700/50 transition-colors text-left ${
-                visited ? 'theme-row-selected' : ''
-              }`}
+              className={`flex items-center gap-3 px-4 py-3 transition-colors ${visited ? 'theme-row-selected' : ''}`}
             >
-              <div
-                className={`w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${
-                  visited ? 'theme-circle-selected' : 'border-gray-500'
-                }`}
+              <button
+                onClick={() => onToggleCountry(country.code)}
+                className="flex items-center gap-3 flex-1 text-left min-w-0"
               >
-                {visited && (
-                  <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                <div
+                  className={`w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${
+                    visited ? 'theme-circle-selected' : 'border-gray-500'
+                  }`}
+                >
+                  {visited && (
+                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+                <span className="text-xl shrink-0">{getFlagEmoji(country.code)}</span>
+                <span className={`flex-1 text-sm truncate ${visited ? 'text-white font-medium' : 'text-gray-300'}`}>
+                  {country.name}
+                </span>
+                <span className="text-xs text-gray-500 shrink-0">{country.continent}</span>
+              </button>
+              {visited && onOpenJournal && (
+                <button
+                  onClick={() => onOpenJournal(country.code)}
+                  className="shrink-0 p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-gray-700 transition-colors"
+                  title="Journal"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
                   </svg>
-                )}
-              </div>
-              <span className="text-xl shrink-0">{getFlagEmoji(country.code)}</span>
-              <span className={`flex-1 text-sm ${visited ? 'text-white font-medium' : 'text-gray-300'}`}>
-                {country.name}
-              </span>
-              <span className="text-xs text-gray-500 shrink-0">{country.continent}</span>
-            </button>
+                </button>
+              )}
+            </div>
           )
         })}
       </div>

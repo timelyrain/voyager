@@ -1,11 +1,16 @@
 'use client'
 
+import { useMemo } from 'react'
 import { COUNTRIES, CONTINENTS, CONTINENT_COLORS, CONTINENT_TOTALS, groupByContinent, getCountryByCode, type Continent } from '@/data/countries'
+import { COUNTRY_CITIES } from '@/data/cities'
+
+export const OFF_THE_MAP = 'Off the Map'
 
 interface StatsPanelProps {
   visitedCodes: string[]
   bucketCodes?: string[]
   bucketCount: number
+  citiesVisited?: string[]
 }
 
 interface FunFact {
@@ -142,32 +147,49 @@ function generateFunFacts(
   return facts.slice(0, 5)
 }
 
-export default function StatsPanel({ visitedCodes, bucketCodes = [], bucketCount }: StatsPanelProps) {
+export default function StatsPanel({ visitedCodes, bucketCodes = [], bucketCount, citiesVisited = [] }: StatsPanelProps) {
   const visitedCount = visitedCodes.length
   const totalCountries = COUNTRIES.length
   const percentage = totalCountries > 0 ? Math.round((visitedCount / totalCountries) * 100) : 0
 
-  const byContinent = groupByContinent(visitedCodes)
-  const continentsVisited = CONTINENTS.filter((c) => byContinent[c] > 0).length
-  const funFacts = generateFunFacts(visitedCodes, bucketCodes, byContinent)
-  const achievements = generateAchievements(visitedCodes, bucketCodes, byContinent)
+  const byContinent = useMemo(() => groupByContinent(visitedCodes), [visitedCodes])
+  const continentsVisited = useMemo(() => CONTINENTS.filter((c) => byContinent[c] > 0).length, [byContinent])
+  const funFacts = useMemo(() => generateFunFacts(visitedCodes, bucketCodes, byContinent), [visitedCodes, bucketCodes, byContinent])
+  const achievements = useMemo(() => generateAchievements(visitedCodes, bucketCodes, byContinent), [visitedCodes, bucketCodes, byContinent])
   const unlockedCount = achievements.filter((a) => a.unlocked).length
+
+  const totalCitiesAvailable = useMemo(() => visitedCodes.reduce((sum, code) => sum + (COUNTRY_CITIES[code]?.length ?? 0), 0), [visitedCodes])
+  const citiesVisitedCount = useMemo(() => citiesVisited.filter(c => c !== OFF_THE_MAP).length, [citiesVisited])
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-2 gap-3">
-        <StatDial label="Countries" value={visitedCount} total={totalCountries} color="var(--accent)" />
+      <div className="grid grid-cols-3 gap-3">
         <StatDial label="Continents" value={continentsVisited} total={6} color="#3b82f6" />
+        <StatDial label="Countries" value={visitedCount} total={totalCountries} color="var(--accent)" />
+        <StatDial label="Destinations" value={citiesVisitedCount} total={Math.max(totalCitiesAvailable, citiesVisitedCount)} color="#a855f7" />
       </div>
 
-      <div className="bg-gray-800 rounded-xl p-4 flex items-center justify-between">
-        <div>
+      <div className="bg-gray-800 rounded-xl p-4">
+        <div className="flex items-center justify-between mb-1.5">
           <div className="text-xs text-gray-400">Bucket list</div>
-          <div className="text-sm font-medium text-gray-200 mt-0.5">
-            {bucketCount} countr{bucketCount === 1 ? 'y' : 'ies'} to visit
-          </div>
+          <div className="text-2xl font-bold text-yellow-400">{bucketCount}</div>
         </div>
-        <div className="text-2xl font-bold text-yellow-400">{bucketCount}</div>
+        {bucketCount === 0 ? (
+          <div className="text-sm text-gray-500">No countries added yet</div>
+        ) : (
+          <div className="flex flex-wrap gap-1.5">
+            {(bucketCodes ?? []).map((code) => {
+              const country = getCountryByCode(code)
+              if (!country) return null
+              const flag = [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1A5 + c.charCodeAt(0))).join('')
+              return (
+                <span key={code} className="flex items-center gap-1 bg-gray-700 rounded-full px-2 py-0.5 text-xs text-gray-200">
+                  {flag} {country.name}
+                </span>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       <div>
@@ -265,12 +287,12 @@ function StatDial({ label, value, total, color }: {
   label: string; value: number; total: number; color: string
 }) {
   return (
-    <div className="bg-gray-800 rounded-xl p-4 flex flex-col items-center gap-2">
-      <ArcDial size={108} strokeWidth={8} value={value} total={total} color={color}>
-        <span className="text-3xl font-bold text-white leading-none">{value}</span>
-        <span className="text-xs text-gray-400 mt-1">of {total}</span>
+    <div className="bg-gray-800 rounded-xl p-3 flex flex-col items-center gap-1.5">
+      <ArcDial size={88} strokeWidth={7} value={value} total={total} color={color}>
+        <span className="text-2xl font-bold text-white leading-none">{value}</span>
+        <span className="text-[10px] text-gray-400 mt-0.5">of {total}</span>
       </ArcDial>
-      <span className="text-xs font-medium text-gray-300">{label}</span>
+      <span className="text-[11px] font-medium text-gray-300">{label}</span>
     </div>
   )
 }

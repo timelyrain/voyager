@@ -133,8 +133,3 @@ body {
 .theme-badge-title { color: var(--achievement-title); }
 .theme-badge-check { color: var(--accent-text); }
 
-@keyframes scroll-quote {
-  0%, 12%   { transform: translateX(0); }
-  65%, 80%  { transform: translateX(var(--scroll-px)); }
-  93%, 100% { transform: translateX(0); }
-}

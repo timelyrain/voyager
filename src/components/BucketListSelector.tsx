@@ -98,12 +98,12 @@ export default function BucketListSelector({
           )}
         </div>
 
-        <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-hide">
+        <div className="flex flex-wrap gap-1.5">
           {(['All', ...CONTINENTS] as const).map((c) => (
             <button
               key={c}
               onClick={() => setActiveContinent(c)}
-              className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                 activeContinent === c
                   ? 'bg-yellow-500 text-gray-900'
                   : 'bg-gray-700 text-gray-300 hover:bg-gray-600'

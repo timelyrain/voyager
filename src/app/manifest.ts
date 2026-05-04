@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'My Travel Log',
-    short_name: 'Travel Log',
+    name: 'Travelogue',
+    short_name: 'Travelogue',
     description: 'Track the countries you have visited on an interactive world map.',
     start_url: '/map',
     display: 'standalone',

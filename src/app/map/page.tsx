@@ -9,9 +9,11 @@ import StatsPanel from '@/components/StatsPanel'
 import ShareModal from '@/components/ShareModal'
 import ThemeSelector from '@/components/ThemeSelector'
 import QuoteBanner from '@/components/QuoteBanner'
+import CountryJournal from '@/components/CountryJournal'
 import { useTheme } from '@/context/ThemeContext'
 import { type ThemeId } from '@/lib/themes'
 import type { User } from '@supabase/supabase-js'
+import { pacifico } from '@/lib/fonts'
 
 const WorldMap = dynamic(() => import('@/components/WorldMap'), { ssr: false })
 
@@ -81,34 +83,47 @@ export default function MapPage() {
   const [isFirstVisit, setIsFirstVisit] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const [sidebarWidth, setSidebarWidth] = useState(288)
+  const [journalCountryCode, setJournalCountryCode] = useState<string | null>(null)
+  const [citiesVisited, setCitiesVisited] = useState<string[]>([])
   const dragRef = useRef<{ startX: number; startWidth: number } | null>(null)
+
+  const VALID_THEME_IDS: ThemeId[] = ['passport', 'vintage', 'airline', 'journal', 'celestial']
 
   useEffect(() => {
     async function load() {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      if (!user) return
+      try {
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        setUser(user)
+        if (!user) return
 
-      const [{ data: visited }, { data: bucket }, { data: profile }] = await Promise.all([
-        supabase.from('visited_countries').select('country_code').eq('user_id', user.id),
-        supabase.from('bucketlist_countries').select('country_code').eq('user_id', user.id),
-        supabase.from('profiles').select('share_key, theme').eq('user_id', user.id).maybeSingle(),
-      ])
+        const [{ data: visited }, { data: bucket }, { data: profile }, { data: journals }] = await Promise.all([
+          supabase.from('visited_countries').select('country_code').eq('user_id', user.id),
+          supabase.from('bucketlist_countries').select('country_code').eq('user_id', user.id),
+          supabase.from('profiles').select('share_key, theme').eq('user_id', user.id).maybeSingle(),
+          supabase.from('country_journals').select('cities_visited').eq('user_id', user.id),
+        ])
 
-      if (visited && visited.length === 0) {
-        setIsFirstVisit(true)
-        setPanel('list')
-      } else if (visited) {
-        setVisitedCodes(new Set(visited.map((r: { country_code: string }) => r.country_code)))
-        setPanel('stats')
+        if (visited && visited.length === 0) {
+          setIsFirstVisit(true)
+          setPanel('list')
+        } else if (visited) {
+          setVisitedCodes(new Set(visited.map((r: { country_code: string }) => r.country_code)))
+          setPanel('stats')
+        }
+        if (bucket) {
+          setBucketCodes(new Set(bucket.map((r: { country_code: string }) => r.country_code)))
+        }
+        if (profile?.share_key) setShareKey(profile.share_key)
+        if (profile?.theme && VALID_THEME_IDS.includes(profile.theme as ThemeId)) {
+          setTheme(profile.theme as ThemeId)
+        }
+        if (journals) setCitiesVisited(journals.flatMap((j: { cities_visited: string[] }) => j.cities_visited || []))
+      } catch (err) {
+        console.error('[load] failed to load user data:', err)
+      } finally {
+        setLoaded(true)
       }
-      if (bucket) {
-        setBucketCodes(new Set(bucket.map((r: { country_code: string }) => r.country_code)))
-      }
-      if (profile?.share_key) setShareKey(profile.share_key)
-      if (profile?.theme) setTheme(profile.theme as ThemeId)
-      setLoaded(true)
     }
     load()
   }, [])
@@ -137,7 +152,11 @@ export default function MapPage() {
   async function saveBucket() {
     if (!user) return
     setSavingBucket(true)
-    await syncCountryCodes('bucketlist_countries', bucketCodes, user.id)
+    try {
+      await syncCountryCodes('bucketlist_countries', bucketCodes, user.id)
+    } catch (err) {
+      console.error('[saveBucket] sync failed:', err)
+    }
     setSavingBucket(false)
     setPanel('map')
   }
@@ -170,7 +189,8 @@ export default function MapPage() {
     if (!user) return
     const newKey = generateShortKey()
     const supabase = createClient()
-    await supabase.from('profiles').update({ share_key: newKey }).eq('user_id', user.id)
+    const { error } = await supabase.from('profiles').update({ share_key: newKey }).eq('user_id', user.id)
+    if (error) return
     setShareUrl(null)
     setShareKey(newKey)
     const url = await shortenUrl(getShareUrl(newKey))
@@ -258,7 +278,7 @@ export default function MapPage() {
       <header className="flex items-center justify-between px-4 py-3 border-b border-gray-800/60 shrink-0 relative z-20 bg-[#0f172a]/70 backdrop-blur-md" style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}>
         <div className="flex items-center gap-2">
           <span className="text-xl">🌍</span>
-          <span className="font-bold text-lg tracking-tight">My Travel Log</span>
+          <span className={`${pacifico.className} text-2xl theme-text`}>Travelogue</span>
         </div>
         <div className="flex items-center gap-2">
           <ThemeSelector onSave={handleThemeSave} />
@@ -283,14 +303,14 @@ export default function MapPage() {
       <div className="hidden md:flex flex-1 overflow-hidden relative z-10">
         <div style={{ width: sidebarWidth }} className="shrink-0 flex flex-col overflow-hidden bg-gray-900/30 backdrop-blur-md">
           <div className="flex border-b border-gray-800">
-            <TabButton active={panel === 'stats'} onClick={() => setPanel('stats')}>Stats</TabButton>
+            <TabButton active={panel === 'stats'} onClick={() => setPanel('stats')}>My Log</TabButton>
             <TabButton active={panel === 'list'} onClick={() => setPanel('list')}>Countries</TabButton>
             <TabButton active={panel === 'bucket'} onClick={() => setPanel('bucket')} yellow>Bucket</TabButton>
           </div>
           <div className="flex-1 overflow-hidden">
             {panel === 'stats' && (
               <div className="p-4 overflow-y-auto h-full">
-                <StatsPanel visitedCodes={visitedArray} bucketCodes={bucketArray} bucketCount={bucketCodes.size} />
+                <StatsPanel visitedCodes={visitedArray} bucketCodes={bucketArray} bucketCount={bucketCodes.size} citiesVisited={citiesVisited} />
               </div>
             )}
             {panel === 'list' && (
@@ -299,6 +319,7 @@ export default function MapPage() {
                 onToggleCountry={toggleVisited}
                 onDone={saveVisited}
                 saving={savingVisited}
+                onOpenJournal={user ? setJournalCountryCode : undefined}
               />
             )}
             {panel === 'bucket' && (
@@ -319,7 +340,7 @@ export default function MapPage() {
         />
 
         <div className="flex-1 p-3 overflow-hidden">
-          <WorldMap visitedCodes={visitedCodes} bucketCodes={bucketCodes} onToggleCountry={toggleVisited} />
+          <WorldMap visitedCodes={visitedCodes} bucketCodes={bucketCodes} onToggleCountry={toggleVisited} onOpenJournal={user ? setJournalCountryCode : undefined} />
         </div>
       </div>
 
@@ -327,7 +348,7 @@ export default function MapPage() {
         <div className="flex-1 overflow-hidden relative">
           {panel === 'map' && (
             <div className="absolute inset-0 p-2">
-              <WorldMap visitedCodes={visitedCodes} bucketCodes={bucketCodes} onToggleCountry={toggleVisited} />
+              <WorldMap visitedCodes={visitedCodes} bucketCodes={bucketCodes} onToggleCountry={toggleVisited} onOpenJournal={user ? setJournalCountryCode : undefined} />
             </div>
           )}
           {panel === 'list' && (
@@ -337,6 +358,7 @@ export default function MapPage() {
                 onToggleCountry={toggleVisited}
                 onDone={saveVisited}
                 saving={savingVisited}
+                onOpenJournal={user ? setJournalCountryCode : undefined}
               />
             </div>
           )}
@@ -353,16 +375,16 @@ export default function MapPage() {
           )}
           {panel === 'stats' && (
             <div className="absolute inset-0 overflow-y-auto p-4 bg-gray-900/40 backdrop-blur-md">
-              <StatsPanel visitedCodes={visitedArray} bucketCodes={bucketArray} bucketCount={bucketCodes.size} />
+              <StatsPanel visitedCodes={visitedArray} bucketCodes={bucketArray} bucketCount={bucketCodes.size} citiesVisited={citiesVisited} />
             </div>
           )}
         </div>
 
         <nav className="shrink-0 flex border-t border-gray-800/60 bg-gray-900/80 backdrop-blur-md" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+          <MobileNavButton active={panel === 'stats'} onClick={() => setPanel('stats')} icon="📊" label="My Log" />
           <MobileNavButton active={panel === 'map'} onClick={() => setPanel('map')} icon="🗺️" label="Map" />
           <MobileNavButton active={panel === 'list'} onClick={() => setPanel('list')} icon="✈️" label="Countries" />
           <MobileNavButton active={panel === 'bucket'} onClick={() => setPanel('bucket')} icon="⭐" label="Bucket" yellow />
-          <MobileNavButton active={panel === 'stats'} onClick={() => setPanel('stats')} icon="📊" label="Stats" />
         </nav>
       </div>
 
@@ -370,6 +392,14 @@ export default function MapPage() {
         <div className="absolute bottom-20 md:hidden left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs px-4 py-2 rounded-full shadow-lg pointer-events-none whitespace-nowrap z-20">
           Tap countries you have visited, then press Done
         </div>
+      )}
+
+      {journalCountryCode && user && (
+        <CountryJournal
+          countryCode={journalCountryCode}
+          userId={user.id}
+          onClose={() => setJournalCountryCode(null)}
+        />
       )}
     </div>
   )

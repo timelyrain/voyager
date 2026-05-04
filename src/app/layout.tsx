@@ -13,12 +13,19 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'My Travel Log — Track countries you have visited',
+  title: 'Travelogue — Track countries you have visited',
   description: 'Interactive world map to track the countries you have visited.',
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+    ],
+    apple: '/icon-192.png',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Travel Log',
+    title: 'Travelogue',
   },
 }
 
