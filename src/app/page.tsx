@@ -49,7 +49,7 @@ export default function HomePage() {
         className="absolute bottom-0 left-0 w-full pointer-events-none"
         viewBox="0 -120 1440 340"
         preserveAspectRatio="none"
-        style={{ height: 320 }}
+        style={{ height: 192 }}
       >
         {/* Near-straight Fuji-like slopes, slight convex bow, peak at ~63% */}
         <path
