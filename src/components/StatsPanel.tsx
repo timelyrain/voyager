@@ -172,7 +172,7 @@ export default function StatsPanel({ visitedCodes, bucketCodes = [], bucketCount
       <div>
         <div className="flex justify-between items-center mb-2">
           <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Bucket list</span>
-          <span className="text-sm font-bold text-yellow-400">{bucketCount}</span>
+          <span className="text-sm font-bold text-yellow-400">{bucketCount} {bucketCount === 1 ? 'country' : 'countries'}</span>
         </div>
         {bucketCount === 0 ? (
           <div className="text-sm text-gray-500">No countries added yet</div>
