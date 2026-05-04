@@ -51,9 +51,9 @@ export default function HomePage() {
         preserveAspectRatio="none"
         style={{ height: 192 }}
       >
-        {/* Near-straight Fuji slopes, wide egg-shaped dome at peak */}
+        {/* Fuji slopes, multi-point rounded ridge at summit */}
         <path
-          d="M0,220 C300,125 600,18 848,-78 C870,-98 886,-112 898,-118 C910,-124 930,-124 942,-118 C954,-112 970,-98 992,-78 C1120,18 1300,130 1440,210 L1440,220 Z"
+          d="M0,220 C300,125 600,18 845,-75 C862,-92 874,-104 884,-112 C893,-118 902,-122 916,-123 C930,-122 939,-118 948,-112 C958,-104 970,-92 987,-75 C1118,18 1298,130 1440,210 L1440,220 Z"
           fill="rgba(3,7,18,0.88)"
         />
         {/* Foreground ridge */}
