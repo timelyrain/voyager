@@ -65,7 +65,7 @@ export default function HomePage() {
               <path d="M12 6 L10.5 8 L13.5 8 Z" fill="white" opacity="0.6"/>
             </g>
             <g transform="rotate(90, 12, 12)">
-              <path d="M12 4.5 L10.5 6.5 L13.5 6.5 Z" fill="#ef4444"/>
+              <path d="M12 4.8 L11 6.5 L13 6.5 Z" fill="#ef4444"/>
             </g>
             <circle cx="12" cy="12" r="1.5" fill="white"/>
             <circle cx="12" cy="12" r="0.6" fill="rgba(0,0,0,0.7)"/>
