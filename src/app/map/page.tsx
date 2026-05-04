@@ -277,7 +277,9 @@ export default function MapPage() {
 
       <header className="flex items-center justify-between px-4 py-3 shrink-0 relative z-20" style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}>
         <div className="flex items-center gap-2">
-          <span className="text-xl">🌍</span>
+          <svg className="w-5 h-5 theme-text shrink-0" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12,1 L14,9.5 L22,12 L14,14.5 L12,22 L10,14.5 L2,12 L10,9.5 Z" />
+          </svg>
           <span className={`${pacifico.className} text-2xl theme-text`}>Travelogue</span>
         </div>
         <div className="flex items-center gap-2">
