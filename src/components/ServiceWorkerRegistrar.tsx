@@ -5,14 +5,11 @@ import { useEffect } from 'react'
 export default function ServiceWorkerRegistrar() {
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return
+    // Register the kill-switch SW, then unregister once it has cleared all caches
     navigator.serviceWorker.register('/sw.js').then((reg) => {
       reg.update()
-      reg.addEventListener('updatefound', () => {
-        const newWorker = reg.installing
-        if (!newWorker) return
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'activated') window.location.reload()
-        })
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        reg.unregister()
       })
     }).catch(() => {})
   }, [])
