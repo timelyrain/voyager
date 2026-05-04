@@ -292,7 +292,6 @@ export default function MapPage() {
               <path d="M12 6 L10.5 8 L13.5 8 Z" fill="white" opacity="0.6"/>
             </g>
             <g transform="rotate(90, 12, 12)">
-              <line x1="12" y1="12" x2="12" y2="5.5" stroke="#ef4444" strokeWidth="1.2" strokeLinecap="round"/>
               <path d="M12 4.5 L10.5 6.5 L13.5 6.5 Z" fill="#ef4444"/>
             </g>
             <circle cx="12" cy="12" r="1.5" fill="white"/>
