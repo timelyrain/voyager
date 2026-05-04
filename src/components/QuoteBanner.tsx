@@ -81,7 +81,7 @@ export default function QuoteBanner() {
   return (
     <div
       ref={containerRef}
-      className="shrink-0 relative z-10 border-b border-gray-800/40 bg-black/10 overflow-hidden"
+      className="shrink-0 relative z-10 overflow-hidden"
     >
       <p
         ref={textRef}
@@ -91,7 +91,7 @@ export default function QuoteBanner() {
         <span className="not-italic text-gray-600 ml-1">— {quote.author}</span>
       </p>
 
-      <div className="absolute inset-y-0 right-0 w-10 pointer-events-none bg-gradient-to-l from-[#07101f] to-transparent" />
+      <div className="absolute inset-y-0 right-0 w-10 pointer-events-none bg-gradient-to-l from-[#0f172a] to-transparent" />
     </div>
   )
 }
