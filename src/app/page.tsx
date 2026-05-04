@@ -44,21 +44,21 @@ export default function HomePage() {
         ].join(', '),
       }} />
 
-      {/* Mountain silhouette — single peak, right of center */}
+      {/* Mountain silhouette — Fuji-profile, peak right of center */}
       <svg
         className="absolute bottom-0 left-0 w-full pointer-events-none"
-        viewBox="0 -80 1440 300"
+        viewBox="0 -120 1440 340"
         preserveAspectRatio="none"
-        style={{ height: 300 }}
+        style={{ height: 320 }}
       >
-        {/* Full-width gradual ascent to blunt peak at ~63% */}
+        {/* Near-straight Fuji-like slopes, slight convex bow, peak at ~63% */}
         <path
-          d="M0,220 C180,215 360,200 520,175 C640,155 740,120 820,80 C866,52 890,15 910,-42 C916,-54 920,-58 928,-58 L936,-58 C940,-56 944,-52 950,-42 C970,15 994,52 1040,80 C1120,120 1244,168 1364,198 C1400,206 1425,213 1440,218 L1440,220 Z"
+          d="M0,220 C300,125 600,18 872,-90 C886,-100 898,-108 908,-110 L924,-110 C934,-108 946,-100 960,-90 C1090,8 1270,128 1440,210 L1440,220 Z"
           fill="rgba(3,7,18,0.88)"
         />
         {/* Foreground ridge */}
         <path
-          d="M0,220 L0,202 C240,190 480,184 720,187 C960,184 1200,190 1440,202 L1440,220 Z"
+          d="M0,220 L0,204 C240,192 480,186 720,189 C960,186 1200,192 1440,204 L1440,220 Z"
           fill="rgba(4,9,20,0.96)"
         />
       </svg>
