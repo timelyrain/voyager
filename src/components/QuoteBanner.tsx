@@ -91,7 +91,6 @@ export default function QuoteBanner() {
         <span className="not-italic text-gray-600 ml-1">— {quote.author}</span>
       </p>
 
-      <div className="absolute inset-y-0 right-0 w-10 pointer-events-none bg-gradient-to-l from-[#0f172a] to-transparent" />
     </div>
   )
 }
