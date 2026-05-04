@@ -163,16 +163,16 @@ export default function StatsPanel({ visitedCodes, bucketCodes = [], bucketCount
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-2">
         <StatDial label="Continents" value={continentsVisited} total={6} color="#3b82f6" />
         <StatDial label="Countries" value={visitedCount} total={totalCountries} color="var(--accent)" />
         <StatDial label="Destinations" value={citiesVisitedCount} total={Math.max(totalCitiesAvailable, citiesVisitedCount)} color="#a855f7" />
       </div>
 
-      <div className="bg-gray-800 rounded-xl p-4">
-        <div className="flex items-center justify-between mb-1.5">
-          <div className="text-xs text-gray-400">Bucket list</div>
-          <div className="text-2xl font-bold text-yellow-400">{bucketCount}</div>
+      <div>
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Bucket list</span>
+          <span className="text-sm font-bold text-yellow-400">{bucketCount}</span>
         </div>
         {bucketCount === 0 ? (
           <div className="text-sm text-gray-500">No countries added yet</div>
@@ -287,9 +287,9 @@ function StatDial({ label, value, total, color }: {
   label: string; value: number; total: number; color: string
 }) {
   return (
-    <div className="bg-gray-800 rounded-xl p-3 flex flex-col items-center gap-1.5">
-      <ArcDial size={88} strokeWidth={7} value={value} total={total} color={color}>
-        <span className="text-2xl font-bold text-white leading-none">{value}</span>
+    <div className="bg-gray-800 rounded-xl p-2 flex flex-col items-center gap-1.5">
+      <ArcDial size={80} strokeWidth={6} value={value} total={total} color={color}>
+        <span className="text-xl font-bold text-white leading-none">{value}</span>
         <span className="text-[10px] text-gray-400 mt-0.5">of {total}</span>
       </ArcDial>
       <span className="text-[11px] font-medium text-gray-300">{label}</span>
