@@ -15,6 +15,22 @@ body {
   display: none;
 }
 
+/* Dark themed scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #334155 transparent;
+}
+*::-webkit-scrollbar {
+  width: 4px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #334155;
+  border-radius: 9999px;
+}
+
 /* ─── Theme CSS variables ───────────────────────────────────────────────── */
 
 :root,
