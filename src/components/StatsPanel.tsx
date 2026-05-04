@@ -287,7 +287,7 @@ function StatDial({ label, value, total, color }: {
   label: string; value: number; total: number; color: string
 }) {
   return (
-    <div className="bg-gray-800 rounded-xl p-2 flex flex-col items-center gap-1.5">
+    <div className="flex flex-col items-center gap-1.5 p-2">
       <ArcDial size={80} strokeWidth={6} value={value} total={total} color={color}>
         <span className="text-xl font-bold text-white leading-none">{value}</span>
         <span className="text-[10px] text-gray-400 mt-0.5">of {total}</span>
