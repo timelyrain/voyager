@@ -49,7 +49,7 @@ export default function WorldMap({ visitedCodes, bucketCodes, onToggleCountry, o
   }
 
   return (
-    <div className="relative w-full h-full bg-[#0f172a] rounded-xl overflow-hidden">
+    <div className="relative w-full h-full rounded-xl overflow-hidden">
       <ComposableMap
         projectionConfig={{ scale: 147 }}
         style={{ width: '100%', height: '100%' }}
