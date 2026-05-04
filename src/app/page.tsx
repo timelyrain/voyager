@@ -47,18 +47,18 @@ export default function HomePage() {
       {/* Mountain silhouette — single peak, right of center */}
       <svg
         className="absolute bottom-0 left-0 w-full pointer-events-none"
-        viewBox="0 0 1440 220"
+        viewBox="0 -40 1440 260"
         preserveAspectRatio="none"
-        style={{ height: 200 }}
+        style={{ height: 260 }}
       >
-        {/* Single wide mountain, peak at ~60% from left */}
+        {/* Single wide mountain, peak at ~63% from left — blunt rounded top */}
         <path
-          d="M0,220 L0,172 C200,165 420,148 600,128 C700,116 780,88 840,60 C880,40 896,28 910,24 C924,28 940,40 980,60 C1040,88 1120,116 1240,132 C1340,145 1400,158 1440,165 L1440,220 Z"
+          d="M0,220 L0,172 C200,164 420,148 610,124 C710,110 790,80 852,48 C876,28 896,-8 914,-20 L926,-20 C944,-8 964,28 988,48 C1050,80 1130,110 1240,128 C1340,145 1400,158 1440,166 L1440,220 Z"
           fill="rgba(3,7,18,0.88)"
         />
         {/* Foreground ridge */}
         <path
-          d="M0,220 L0,192 C240,180 480,174 720,177 C960,174 1200,180 1440,192 L1440,220 Z"
+          d="M0,220 L0,195 C240,183 480,177 720,180 C960,177 1200,183 1440,195 L1440,220 Z"
           fill="rgba(4,9,20,0.96)"
         />
       </svg>
