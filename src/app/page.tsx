@@ -44,21 +44,21 @@ export default function HomePage() {
         ].join(', '),
       }} />
 
-      {/* Mountain silhouette — 3 peaks */}
+      {/* Mountain silhouette — single peak, right of center */}
       <svg
         className="absolute bottom-0 left-0 w-full pointer-events-none"
         viewBox="0 0 1440 220"
         preserveAspectRatio="none"
         style={{ height: 200 }}
       >
-        {/* Back range — 3 wide gradual peaks */}
+        {/* Single wide mountain, peak at ~60% from left */}
         <path
-          d="M0,220 L0,168 C80,162 180,148 280,128 C330,118 355,100 375,80 C395,60 405,52 420,50 C435,52 455,68 490,95 C530,122 575,138 625,138 C665,136 695,118 712,82 C718,62 721,38 724,28 C727,38 730,62 736,82 C753,118 783,136 823,138 C873,138 918,122 958,95 C993,68 1013,52 1028,52 C1043,54 1062,72 1090,96 C1120,120 1165,145 1260,158 C1340,168 1400,172 1440,174 L1440,220 Z"
+          d="M0,220 L0,172 C200,165 420,148 600,128 C700,116 780,88 840,60 C880,40 896,28 910,24 C924,28 940,40 980,60 C1040,88 1120,116 1240,132 C1340,145 1400,158 1440,165 L1440,220 Z"
           fill="rgba(3,7,18,0.88)"
         />
         {/* Foreground ridge */}
         <path
-          d="M0,220 L0,190 C240,178 480,172 720,175 C960,172 1200,178 1440,190 L1440,220 Z"
+          d="M0,220 L0,192 C240,180 480,174 720,177 C960,174 1200,180 1440,192 L1440,220 Z"
           fill="rgba(4,9,20,0.96)"
         />
       </svg>
