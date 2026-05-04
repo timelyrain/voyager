@@ -50,7 +50,31 @@ export default function HomePage() {
         <div className="relative inline-flex items-center justify-center w-24 h-24">
           <div className="absolute inset-0 rounded-full border-2 border-dashed" style={{ borderColor: 'var(--accent)', opacity: 0.5 }} />
           <div className="absolute inset-2 rounded-full border" style={{ borderColor: 'var(--accent)', opacity: 0.3 }} />
-          <span className="text-5xl relative z-10">🌍</span>
+          <svg className="w-14 h-14 relative z-10" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10.5" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.35)" strokeWidth="0.75"/>
+            <path d="M12 3.5 L13.3 6.2 L10.7 6.2 Z" fill="white"/>
+            <line x1="20.2" y1="12" x2="21.5" y2="12" stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.5"/>
+            <line x1="12" y1="20.2" x2="12" y2="21.5" stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.5"/>
+            <line x1="3.8" y1="12" x2="2.5" y2="12" stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.5"/>
+            <g transform="rotate(-42, 12, 12)">
+              <line x1="12" y1="12" x2="12" y2="5.5" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.75"/>
+              <path d="M12 4.5 L10.5 6.5 L13.5 6.5 Z" fill="white" opacity="0.75"/>
+            </g>
+            <g transform="rotate(52, 12, 12)">
+              <line x1="12" y1="12" x2="12" y2="5.5" stroke="#ef4444" strokeWidth="1.2" strokeLinecap="round"/>
+              <path d="M12 4.5 L10.5 6.5 L13.5 6.5 Z" fill="#ef4444"/>
+            </g>
+            <g transform="rotate(148, 12, 12)">
+              <line x1="12" y1="12" x2="12" y2="6" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.6"/>
+              <path d="M12 5 L10.5 7 L13.5 7 Z" fill="white" opacity="0.6"/>
+            </g>
+            <g transform="rotate(218, 12, 12)">
+              <line x1="12" y1="12" x2="12" y2="6" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.7"/>
+              <path d="M12 5 L10.5 7 L13.5 7 Z" fill="white" opacity="0.7"/>
+            </g>
+            <circle cx="12" cy="12" r="1.5" fill="white"/>
+            <circle cx="12" cy="12" r="0.6" fill="rgba(0,0,0,0.7)"/>
+          </svg>
         </div>
         <h1 className={`${pacifico.className} text-4xl theme-text`}>Travelogue</h1>
         <p className="text-gray-400 text-base max-w-sm">
