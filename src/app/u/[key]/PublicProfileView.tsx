@@ -29,7 +29,7 @@ export default function PublicProfileView({ displayName, theme, visitedCodes, bu
         <div className="flex items-center gap-3">
           <svg className="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="12" r="10.5" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.35)" strokeWidth="0.75"/>
-              <path d="M12 3.5 L13.3 6.2 L10.7 6.2 Z" fill="white"/>
+              <path d="M12 1.5 L13.3 4.2 L10.7 4.2 Z" fill="white"/>
               <line x1="22.5" y1="12"   x2="20.8" y2="12"   stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.75"/>
               <line x1="12"   y1="22.5" x2="12"   y2="20.8"  stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.75"/>
               <line x1="1.5"  y1="12"   x2="3.2"  y2="12"   stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.75"/>

@@ -52,7 +52,7 @@ export default function HomePage() {
           <div className="absolute inset-2 rounded-full border" style={{ borderColor: 'var(--accent)', opacity: 0.3 }} />
           <svg className="w-14 h-14 relative z-10" viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="10.5" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.35)" strokeWidth="0.75"/>
-            <path d="M12 3.5 L13.3 6.2 L10.7 6.2 Z" fill="white"/>
+            <path d="M12 1.5 L13.3 4.2 L10.7 4.2 Z" fill="white"/>
             {/* Major ticks: E, S, W */}
             <line x1="22.5" y1="12"   x2="20.8" y2="12"   stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.75"/>
             <line x1="12"   y1="22.5" x2="12"   y2="20.8"  stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.75"/>
