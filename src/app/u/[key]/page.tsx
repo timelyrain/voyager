@@ -30,9 +30,10 @@ export default async function PublicProfilePage({ params }: Props) {
 
   if (!profile) notFound()
 
-  const [{ data: visited }, { data: bucket }] = await Promise.all([
+  const [{ data: visited }, { data: bucket }, { data: journals }] = await Promise.all([
     supabase.from('visited_countries').select('country_code').eq('user_id', profile.user_id),
     supabase.from('bucketlist_countries').select('country_code').eq('user_id', profile.user_id),
+    supabase.from('country_journals').select('cities_visited').eq('user_id', profile.user_id),
   ])
 
   return (
@@ -41,6 +42,7 @@ export default async function PublicProfilePage({ params }: Props) {
       theme={profile.theme}
       visitedCodes={(visited || []).map((r: { country_code: string }) => r.country_code)}
       bucketCodes={(bucket || []).map((r: { country_code: string }) => r.country_code)}
+      citiesVisited={(journals || []).flatMap((j: { cities_visited: string[] }) => j.cities_visited || [])}
     />
   )
 }

@@ -13,9 +13,10 @@ interface PublicProfileViewProps {
   theme: string | null
   visitedCodes: string[]
   bucketCodes: string[]
+  citiesVisited: string[]
 }
 
-export default function PublicProfileView({ displayName, theme, visitedCodes, bucketCodes }: PublicProfileViewProps) {
+export default function PublicProfileView({ displayName, theme, visitedCodes, bucketCodes, citiesVisited }: PublicProfileViewProps) {
   const visited = new Set(visitedCodes)
   const bucket = new Set(bucketCodes)
   const [panel, setPanel] = useState<'map' | 'stats'>('map')
@@ -36,7 +37,7 @@ export default function PublicProfileView({ displayName, theme, visitedCodes, bu
 
       <div className="hidden md:flex flex-1 overflow-hidden">
         <div className="w-72 shrink-0 border-r border-gray-800 overflow-y-auto p-4">
-          <StatsPanel visitedCodes={visitedCodes} bucketCount={bucketCodes.length} />
+          <StatsPanel visitedCodes={visitedCodes} bucketCount={bucketCodes.length} citiesVisited={citiesVisited} />
         </div>
         <div className="flex-1 p-3">
           <WorldMap visitedCodes={visited} bucketCodes={bucket} readonly />
@@ -52,7 +53,7 @@ export default function PublicProfileView({ displayName, theme, visitedCodes, bu
           )}
           {panel === 'stats' && (
             <div className="absolute inset-0 overflow-y-auto p-4">
-              <StatsPanel visitedCodes={visitedCodes} bucketCount={bucketCodes.length} />
+              <StatsPanel visitedCodes={visitedCodes} bucketCount={bucketCodes.length} citiesVisited={citiesVisited} />
             </div>
           )}
         </div>
