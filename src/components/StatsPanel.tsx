@@ -197,9 +197,23 @@ export default function StatsPanel({ visitedCodes, bucketCodes = [], bucketCount
           <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">World coverage</span>
           <span className="text-sm font-bold theme-text">{percentage}%</span>
         </div>
-        <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden mb-3">
           <div className="h-full theme-bar rounded-full transition-all duration-500" style={{ width: `${percentage}%` }} />
         </div>
+        {visitedCount > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {visitedCodes.map((code) => {
+              const country = getCountryByCode(code)
+              if (!country) return null
+              const flag = [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1A5 + c.charCodeAt(0))).join('')
+              return (
+                <span key={code} className="flex items-center gap-1 bg-gray-700 rounded-full px-2 py-0.5 text-xs text-gray-200">
+                  {flag} {country.name}
+                </span>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       <div>
