@@ -53,17 +53,25 @@ export default function HomePage() {
           <svg className="w-14 h-14 relative z-10" viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="10.5" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.35)" strokeWidth="0.75"/>
             <path d="M12 3.5 L13.3 6.2 L10.7 6.2 Z" fill="white"/>
-            <line x1="20.2" y1="12" x2="21.5" y2="12" stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.5"/>
-            <line x1="12" y1="20.2" x2="12" y2="21.5" stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.5"/>
-            <line x1="3.8" y1="12" x2="2.5" y2="12" stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.5"/>
-            <g transform="rotate(-60, 12, 12)">
-              <line x1="12" y1="12" x2="12" y2="5" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.85"/>
-              <path d="M12 4 L10.5 6 L13.5 6 Z" fill="white" opacity="0.85"/>
-            </g>
-            <g transform="rotate(60, 12, 12)">
-              <line x1="12" y1="12" x2="12" y2="7" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.6"/>
-              <path d="M12 6 L10.5 8 L13.5 8 Z" fill="white" opacity="0.6"/>
-            </g>
+            {/* Major ticks: E, S, W */}
+            <line x1="22.5" y1="12"   x2="20.8" y2="12"   stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.75"/>
+            <line x1="12"   y1="22.5" x2="12"   y2="20.8"  stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.75"/>
+            <line x1="1.5"  y1="12"   x2="3.2"  y2="12"   stroke="white" strokeWidth="0.8" strokeLinecap="round" opacity="0.75"/>
+            {/* Intercardinal ticks: NE, SE, SW, NW */}
+            <line x1="19.42" y1="4.58"  x2="18.51" y2="5.49"  stroke="white" strokeWidth="0.65" strokeLinecap="round" opacity="0.55"/>
+            <line x1="19.42" y1="19.42" x2="18.51" y2="18.51" stroke="white" strokeWidth="0.65" strokeLinecap="round" opacity="0.55"/>
+            <line x1="4.58"  y1="19.42" x2="5.49"  y2="18.51" stroke="white" strokeWidth="0.65" strokeLinecap="round" opacity="0.55"/>
+            <line x1="4.58"  y1="4.58"  x2="5.49"  y2="5.49"  stroke="white" strokeWidth="0.65" strokeLinecap="round" opacity="0.55"/>
+            {/* Minor ticks at 30° intervals */}
+            <line x1="17.25" y1="2.91"  x2="16.75" y2="3.77"  stroke="white" strokeWidth="0.5" strokeLinecap="round" opacity="0.35"/>
+            <line x1="21.09" y1="6.75"  x2="20.23" y2="7.25"  stroke="white" strokeWidth="0.5" strokeLinecap="round" opacity="0.35"/>
+            <line x1="21.09" y1="17.25" x2="20.23" y2="16.75" stroke="white" strokeWidth="0.5" strokeLinecap="round" opacity="0.35"/>
+            <line x1="17.25" y1="21.09" x2="16.75" y2="20.23" stroke="white" strokeWidth="0.5" strokeLinecap="round" opacity="0.35"/>
+            <line x1="6.75"  y1="21.09" x2="7.25"  y2="20.23" stroke="white" strokeWidth="0.5" strokeLinecap="round" opacity="0.35"/>
+            <line x1="2.91"  y1="17.25" x2="3.77"  y2="16.75" stroke="white" strokeWidth="0.5" strokeLinecap="round" opacity="0.35"/>
+            <line x1="2.91"  y1="6.75"  x2="3.77"  y2="7.25"  stroke="white" strokeWidth="0.5" strokeLinecap="round" opacity="0.35"/>
+            <line x1="6.75"  y1="2.91"  x2="7.25"  y2="3.77"  stroke="white" strokeWidth="0.5" strokeLinecap="round" opacity="0.35"/>
+            {/* Red direction indicator */}
             <g transform="rotate(90, 12, 12)">
               <path d="M12 4.8 L11 6.5 L13 6.5 Z" fill="#ef4444"/>
             </g>
