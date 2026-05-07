@@ -5,7 +5,9 @@ import { COUNTRIES, CONTINENTS, type Continent } from '@/data/countries'
 
 interface CountrySelectorProps {
   visitedCodes: Set<string>
+  bucketCodes?: Set<string>
   onToggleCountry: (code: string) => void
+  onToggleBucket?: (code: string) => void
   onDone: () => void
   saving: boolean
   onOpenJournal?: (code: string) => void
@@ -17,7 +19,9 @@ function getFlagEmoji(code: string) {
 
 export default function CountrySelector({
   visitedCodes,
+  bucketCodes,
   onToggleCountry,
+  onToggleBucket,
   onDone,
   saving,
   onOpenJournal,
@@ -137,11 +141,28 @@ export default function CountrySelector({
                   )}
                 </div>
                 <span className="text-xl shrink-0">{getFlagEmoji(country.code)}</span>
-                <span className={`flex-1 text-sm truncate ${visited ? 'text-white font-medium' : 'text-gray-300'}`}>
-                  {country.name}
+                <span className="flex-1 min-w-0">
+                  <span className={`text-sm ${visited ? 'text-white font-medium' : 'text-gray-300'}`}>{country.name}</span>
+                  <span className="ml-1.5 text-xs text-gray-500">{country.continent}</span>
                 </span>
-                <span className="text-xs text-gray-500 shrink-0">{country.continent}</span>
               </button>
+              {onToggleBucket && (
+                <button
+                  onClick={() => onToggleBucket(country.code)}
+                  className={`shrink-0 p-1.5 rounded-lg transition-colors ${
+                    bucketCodes?.has(country.code)
+                      ? 'text-rose-400 hover:text-rose-300'
+                      : 'text-gray-500 hover:text-rose-400'
+                  } hover:bg-gray-700`}
+                  title="Bucket list"
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                    fill={bucketCodes?.has(country.code) ? 'currentColor' : 'none'}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                  </svg>
+                </button>
+              )}
               {visited && onOpenJournal && (
                 <button
                   onClick={() => onOpenJournal(country.code)}

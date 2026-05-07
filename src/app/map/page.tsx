@@ -135,15 +135,13 @@ export default function MapPage() {
     if (!user) return
     setSavingVisited(true)
     const toAdd = await syncCountryCodes('visited_countries', visitedCodes, user.id)
+    let finalBucketCodes = bucketCodes
     if (toAdd.length > 0) {
-      const supabase = createClient()
-      await supabase.from('bucketlist_countries').delete().eq('user_id', user.id).in('country_code', toAdd)
-      setBucketCodes((prev) => {
-        const next = new Set(prev)
-        toAdd.forEach((c) => next.delete(c))
-        return next
-      })
+      finalBucketCodes = new Set(bucketCodes)
+      toAdd.forEach((c) => finalBucketCodes.delete(c))
+      setBucketCodes(finalBucketCodes)
     }
+    await syncCountryCodes('bucketlist_countries', finalBucketCodes, user.id)
     setSavingVisited(false)
     setIsFirstVisit(false)
     setPanel('map')
@@ -343,7 +341,9 @@ export default function MapPage() {
             {panel === 'list' && (
               <CountrySelector
                 visitedCodes={visitedCodes}
+                bucketCodes={bucketCodes}
                 onToggleCountry={toggleVisited}
+                onToggleBucket={toggleBucket}
                 onDone={saveVisited}
                 saving={savingVisited}
                 onOpenJournal={user ? setJournalCountryCode : undefined}
@@ -382,7 +382,9 @@ export default function MapPage() {
             <div className="absolute inset-0 overflow-hidden flex flex-col bg-gray-900/40 backdrop-blur-md">
               <CountrySelector
                 visitedCodes={visitedCodes}
+                bucketCodes={bucketCodes}
                 onToggleCountry={toggleVisited}
+                onToggleBucket={toggleBucket}
                 onDone={saveVisited}
                 saving={savingVisited}
                 onOpenJournal={user ? setJournalCountryCode : undefined}
