@@ -315,7 +315,7 @@ export default function MapPage() {
 
       <QuoteBanner />
 
-      <div className="hidden md:flex flex-1 overflow-hidden relative z-10">
+      <div className={`flex-1 overflow-hidden relative z-10 ${panel === 'stats' ? 'hidden md:flex' : 'hidden lg:flex'}`}>
         <div style={{ width: sidebarWidth }} className="shrink-0 flex flex-col overflow-hidden bg-gray-900/30 backdrop-blur-md">
           <div className="flex border-b border-gray-800">
             <TabButton active={panel === 'stats'} onClick={() => setPanel('stats')}>My Log</TabButton>
@@ -351,7 +351,7 @@ export default function MapPage() {
         </div>
       </div>
 
-      <div className="md:hidden flex-1 overflow-hidden flex flex-col relative z-10">
+      <div className={`flex-1 overflow-hidden flex flex-col relative z-10 ${panel === 'stats' ? 'md:hidden' : 'lg:hidden'}`}>
         <div className="flex-1 overflow-hidden relative">
           {panel === 'list' && (
             <div className="absolute inset-0 overflow-hidden flex flex-col bg-gray-900/40 backdrop-blur-md">
@@ -385,7 +385,7 @@ export default function MapPage() {
       </div>
 
       {isFirstVisit && panel === 'list' && (
-        <div className="absolute bottom-20 md:hidden left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs px-4 py-2 rounded-full shadow-lg pointer-events-none whitespace-nowrap z-20">
+        <div className="absolute bottom-20 lg:hidden left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs px-4 py-2 rounded-full shadow-lg pointer-events-none whitespace-nowrap z-20">
           Tap countries you have visited, then press Done
         </div>
       )}
