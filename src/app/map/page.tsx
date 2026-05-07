@@ -134,17 +134,21 @@ export default function MapPage() {
   async function saveVisited() {
     if (!user) return
     setSavingVisited(true)
-    const toAdd = await syncCountryCodes('visited_countries', visitedCodes, user.id)
-    let finalBucketCodes = bucketCodes
-    if (toAdd.length > 0) {
-      finalBucketCodes = new Set(bucketCodes)
-      toAdd.forEach((c) => finalBucketCodes.delete(c))
-      setBucketCodes(finalBucketCodes)
+    try {
+      const toAdd = await syncCountryCodes('visited_countries', visitedCodes, user.id)
+      let finalBucketCodes = bucketCodes
+      if (toAdd.length > 0) {
+        finalBucketCodes = new Set(bucketCodes)
+        toAdd.forEach((c) => finalBucketCodes.delete(c))
+        setBucketCodes(finalBucketCodes)
+      }
+      await syncCountryCodes('bucketlist_countries', finalBucketCodes, user.id)
+    } catch (err) {
+      console.error('[saveVisited] sync failed:', err)
     }
-    await syncCountryCodes('bucketlist_countries', finalBucketCodes, user.id)
     setSavingVisited(false)
     setIsFirstVisit(false)
-    setPanel('map')
+    setPanel('stats')
   }
 
   async function saveBucket() {
