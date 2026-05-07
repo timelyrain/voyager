@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Apply saved theme before first paint to avoid flash */}
         <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}` }} />
       </head>
-      <body className={`${geist.className} h-full bg-[#0f172a] antialiased`}>
+      <body className={`${geist.className} h-full bg-gray-900 antialiased`}>
         <ThemeProvider>
           {children}
         </ThemeProvider>
