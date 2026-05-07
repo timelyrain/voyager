@@ -147,40 +147,52 @@ export default function CountrySelector({
                 </span>
               </button>
               {onToggleBucket && (
-                <button
-                  onClick={() => !visited && onToggleBucket(country.code)}
-                  disabled={visited}
-                  className={`shrink-0 p-1.5 rounded-lg transition-colors ${
-                    visited
-                      ? 'text-gray-700 cursor-not-allowed'
-                      : bucketCodes?.has(country.code)
-                        ? 'text-rose-400 hover:text-rose-300 hover:bg-gray-700'
-                        : 'text-rose-400/60 hover:text-rose-400 hover:bg-gray-700'
-                  }`}
-                  title={visited ? '' : 'Bucket list'}
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-                    fill={!visited && bucketCodes?.has(country.code) ? 'currentColor' : 'none'}
+                <div className="relative group/bucket shrink-0">
+                  <button
+                    onClick={() => !visited && onToggleBucket(country.code)}
+                    disabled={visited}
+                    className={`p-1.5 rounded-lg transition-colors ${
+                      visited
+                        ? 'text-gray-700 cursor-not-allowed'
+                        : bucketCodes?.has(country.code)
+                          ? 'text-rose-400 hover:text-rose-300 hover:bg-gray-700'
+                          : 'text-rose-400/60 hover:text-rose-400 hover:bg-gray-700'
+                    }`}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                  </svg>
-                </button>
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                      fill={!visited && bucketCodes?.has(country.code) ? 'currentColor' : 'none'}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                    </svg>
+                  </button>
+                  {!visited && (
+                    <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-0.5 rounded bg-gray-800 text-gray-200 text-xs whitespace-nowrap opacity-0 group-hover/bucket:opacity-100 transition-none">
+                      Bucket list
+                    </span>
+                  )}
+                </div>
               )}
               {onOpenJournal && (
-                <button
-                  onClick={() => visited && onOpenJournal(country.code)}
-                  disabled={!visited}
-                  className={`shrink-0 p-1.5 rounded-lg transition-colors ${
-                    visited
-                      ? 'text-white hover:bg-gray-700'
-                      : 'text-gray-700 cursor-not-allowed'
-                  }`}
-                  title={visited ? 'Journal' : ''}
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                  </svg>
-                </button>
+                <div className="relative group/journal shrink-0">
+                  <button
+                    onClick={() => visited && onOpenJournal(country.code)}
+                    disabled={!visited}
+                    className={`p-1.5 rounded-lg transition-colors ${
+                      visited
+                        ? 'text-white hover:bg-gray-700'
+                        : 'text-gray-700 cursor-not-allowed'
+                    }`}
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                    </svg>
+                  </button>
+                  {visited && (
+                    <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-0.5 rounded bg-gray-800 text-gray-200 text-xs whitespace-nowrap opacity-0 group-hover/journal:opacity-100 transition-none">
+                      Journal
+                    </span>
+                  )}
+                </div>
               )}
             </div>
           )
