@@ -379,7 +379,7 @@ export default function MapPage() {
         </div>
 
         <nav className="shrink-0 flex border-t border-gray-800/60 bg-gray-900" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-          <MobileNavButton active={panel === 'stats'} onClick={() => setPanel('stats')} icon="🧳" label="My Log" />
+          <MobileNavButton active={panel === 'stats'} onClick={() => setPanel('stats')} icon="🗺️" label="Map" />
           <MobileNavButton active={panel === 'list'} onClick={() => setPanel('list')} icon="✈️" label="Countries" />
         </nav>
       </div>

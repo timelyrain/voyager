@@ -102,12 +102,12 @@ export default function CountrySelector({
           )}
         </div>
 
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
           {(['All', ...CONTINENTS] as const).map((c) => (
             <button
               key={c}
               onClick={() => setActiveContinent(c)}
-              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+              className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                 activeContinent === c
                   ? 'theme-pill-active'
                   : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
