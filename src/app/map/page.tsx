@@ -318,8 +318,8 @@ export default function MapPage() {
       <div className={`flex-1 overflow-hidden relative z-10 ${panel === 'stats' ? 'hidden md:flex' : 'hidden lg:flex'}`}>
         <div style={{ width: sidebarWidth }} className="shrink-0 flex flex-col overflow-hidden bg-gray-900/30 backdrop-blur-md">
           <div className="flex border-b border-gray-800">
-            <TabButton active={panel === 'stats'} onClick={() => setPanel('stats')}>My Log</TabButton>
-            <TabButton active={panel === 'list'} onClick={() => setPanel('list')}>Countries</TabButton>
+            <TabButton active={panel === 'stats'} onClick={() => setPanel('stats')}>🗺️ Map</TabButton>
+            <TabButton active={panel === 'list'} onClick={() => setPanel('list')}>✈️ Countries</TabButton>
           </div>
           <div className="flex-1 overflow-hidden">
             {panel === 'stats' && (
