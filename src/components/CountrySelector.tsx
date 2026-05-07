@@ -31,11 +31,16 @@ export default function CountrySelector({
   const [activeContinent, setActiveContinent] = useState<Continent | 'All'>('All')
 
   const filtered = useMemo(() => {
+    const group = (code: string) => {
+      if (visitedCodes.has(code)) return 0
+      if (bucketCodes?.has(code)) return 1
+      return 2
+    }
     return COUNTRIES.filter((c) => {
       const matchSearch = c.name.toLowerCase().includes(search.toLowerCase())
       const matchContinent = activeContinent === 'All' || c.continent === activeContinent
       return matchSearch && matchContinent
-    })
+    }).sort((a, b) => group(a.code) - group(b.code))
   }, [search, activeContinent])
 
   const visitedCount = visitedCodes.size
@@ -153,7 +158,7 @@ export default function CountrySelector({
                     disabled={visited}
                     className={`p-1.5 rounded-lg transition-colors ${
                       visited
-                        ? 'text-gray-700 cursor-not-allowed'
+                        ? 'text-gray-700 cursor-default'
                         : bucketCodes?.has(country.code)
                           ? 'text-rose-400 hover:text-rose-300 hover:bg-gray-700'
                           : 'text-rose-400/60 hover:text-rose-400 hover:bg-gray-700'
@@ -180,7 +185,7 @@ export default function CountrySelector({
                     className={`p-1.5 rounded-lg transition-colors ${
                       visited
                         ? 'text-white hover:bg-gray-700'
-                        : 'text-gray-700 cursor-not-allowed'
+                        : 'text-gray-700 cursor-default'
                     }`}
                   >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

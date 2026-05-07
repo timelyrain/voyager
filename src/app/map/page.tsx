@@ -4,7 +4,6 @@ import dynamic from 'next/dynamic'
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import CountrySelector from '@/components/CountrySelector'
-import BucketListSelector from '@/components/BucketListSelector'
 import StatsPanel from '@/components/StatsPanel'
 import ShareModal from '@/components/ShareModal'
 import ThemeSelector from '@/components/ThemeSelector'
@@ -17,7 +16,7 @@ import { pacifico } from '@/lib/fonts'
 
 const WorldMap = dynamic(() => import('@/components/WorldMap'), { ssr: false })
 
-type Panel = 'map' | 'list' | 'bucket' | 'stats'
+type Panel = 'map' | 'list' | 'stats'
 
 function generateShortKey(): string {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
@@ -79,7 +78,6 @@ export default function MapPage() {
   const [showShareModal, setShowShareModal] = useState(false)
   const [shareLoading, setShareLoading] = useState(false)
   const [savingVisited, setSavingVisited] = useState(false)
-  const [savingBucket, setSavingBucket] = useState(false)
   const [isFirstVisit, setIsFirstVisit] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const [sidebarWidth, setSidebarWidth] = useState(288)
@@ -149,18 +147,6 @@ export default function MapPage() {
     setSavingVisited(false)
     setIsFirstVisit(false)
     setPanel('stats')
-  }
-
-  async function saveBucket() {
-    if (!user) return
-    setSavingBucket(true)
-    try {
-      await syncCountryCodes('bucketlist_countries', bucketCodes, user.id)
-    } catch (err) {
-      console.error('[saveBucket] sync failed:', err)
-    }
-    setSavingBucket(false)
-    setPanel('map')
   }
 
   async function handleShareClick() {
@@ -334,7 +320,6 @@ export default function MapPage() {
           <div className="flex border-b border-gray-800">
             <TabButton active={panel === 'stats'} onClick={() => setPanel('stats')}>My Log</TabButton>
             <TabButton active={panel === 'list'} onClick={() => setPanel('list')}>Countries</TabButton>
-            <TabButton active={panel === 'bucket'} onClick={() => setPanel('bucket')} yellow>Bucket</TabButton>
           </div>
           <div className="flex-1 overflow-hidden">
             {panel === 'stats' && (
@@ -351,15 +336,6 @@ export default function MapPage() {
                 onDone={saveVisited}
                 saving={savingVisited}
                 onOpenJournal={user ? setJournalCountryCode : undefined}
-              />
-            )}
-            {panel === 'bucket' && (
-              <BucketListSelector
-                visitedCodes={visitedCodes}
-                bucketCodes={bucketCodes}
-                onToggleCountry={toggleBucket}
-                onDone={saveBucket}
-                saving={savingBucket}
               />
             )}
           </div>
@@ -395,17 +371,6 @@ export default function MapPage() {
               />
             </div>
           )}
-          {panel === 'bucket' && (
-            <div className="absolute inset-0 overflow-hidden flex flex-col bg-gray-900/40 backdrop-blur-md">
-              <BucketListSelector
-                visitedCodes={visitedCodes}
-                bucketCodes={bucketCodes}
-                onToggleCountry={toggleBucket}
-                onDone={saveBucket}
-                saving={savingBucket}
-              />
-            </div>
-          )}
           {panel === 'stats' && (
             <div className="absolute inset-0 overflow-y-auto p-4 bg-gray-900/40 backdrop-blur-md">
               <StatsPanel visitedCodes={visitedArray} bucketCodes={bucketArray} bucketCount={bucketCodes.size} citiesVisited={citiesVisited} />
@@ -417,7 +382,6 @@ export default function MapPage() {
           <MobileNavButton active={panel === 'stats'} onClick={() => setPanel('stats')} icon="📊" label="My Log" />
           <MobileNavButton active={panel === 'map'} onClick={() => setPanel('map')} icon="🗺️" label="Map" />
           <MobileNavButton active={panel === 'list'} onClick={() => setPanel('list')} icon="✈️" label="Countries" />
-          <MobileNavButton active={panel === 'bucket'} onClick={() => setPanel('bucket')} icon="⭐" label="Bucket" yellow />
         </nav>
       </div>
 
@@ -439,16 +403,15 @@ export default function MapPage() {
 }
 
 function TabButton({
-  active, onClick, children, yellow,
+  active, onClick, children,
 }: {
-  active: boolean; onClick: () => void; children: React.ReactNode; yellow?: boolean
+  active: boolean; onClick: () => void; children: React.ReactNode
 }) {
-  const activeColor = yellow ? 'text-yellow-400 border-b-2 border-yellow-400' : 'theme-tab-active'
   return (
     <button
       onClick={onClick}
       className={`flex-1 py-3 text-sm font-medium transition-colors ${
-        active ? activeColor : 'text-gray-400 hover:text-gray-200'
+        active ? 'theme-tab-active' : 'text-gray-400 hover:text-gray-200'
       }`}
     >
       {children}
@@ -457,16 +420,15 @@ function TabButton({
 }
 
 function MobileNavButton({
-  active, onClick, icon, label, yellow,
+  active, onClick, icon, label,
 }: {
-  active: boolean; onClick: () => void; icon: string; label: string; yellow?: boolean
+  active: boolean; onClick: () => void; icon: string; label: string
 }) {
-  const activeColor = yellow ? 'text-yellow-400' : 'theme-text'
   return (
     <button
       onClick={onClick}
       className={`flex-1 flex flex-col items-center justify-center py-3 gap-0.5 transition-colors ${
-        active ? activeColor : 'text-gray-500'
+        active ? 'theme-text' : 'text-gray-500'
       }`}
     >
       <span className="text-lg">{icon}</span>
