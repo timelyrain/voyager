@@ -354,8 +354,26 @@ export default function MapPage() {
       <div className="md:hidden flex-1 overflow-hidden flex flex-col relative z-10">
         <div className="flex-1 overflow-hidden relative">
           {panel === 'map' && (
-            <div className="absolute inset-0 p-2">
-              <WorldMap visitedCodes={visitedCodes} bucketCodes={bucketCodes} onToggleCountry={toggleVisited} onOpenJournal={user ? setJournalCountryCode : undefined} />
+            <div className="absolute inset-0 flex flex-col overflow-hidden">
+<div className="w-full shrink-0" style={{ aspectRatio: '4/3' }}>
+                <WorldMap visitedCodes={visitedCodes} bucketCodes={bucketCodes} onToggleCountry={toggleVisited} onOpenJournal={user ? setJournalCountryCode : undefined} />
+              </div>
+              <div className="flex-1 flex items-center justify-around px-6 border-t border-gray-800/40">
+                <div className="text-center">
+                  <div className="text-3xl font-bold theme-text">{visitedCodes.size}</div>
+                  <div className="text-xs text-gray-400 uppercase tracking-wide mt-1">countries</div>
+                </div>
+                <div className="w-px h-10 bg-gray-700/50" />
+                <div className="text-center">
+                  <div className="text-3xl font-bold theme-text">{Math.round(visitedCodes.size / 195 * 100)}%</div>
+                  <div className="text-xs text-gray-400 uppercase tracking-wide mt-1">of world</div>
+                </div>
+                <div className="w-px h-10 bg-gray-700/50" />
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-rose-400">{bucketCodes.size}</div>
+                  <div className="text-xs text-gray-400 uppercase tracking-wide mt-1">bucket list</div>
+                </div>
+              </div>
             </div>
           )}
           {panel === 'list' && (
