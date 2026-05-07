@@ -224,7 +224,7 @@ export default function MapPage() {
   const bucketArray = Array.from(bucketCodes)
 
   return (
-    <div className="flex flex-col h-dvh text-white relative overflow-hidden">
+    <div className="flex flex-col h-screen text-white relative overflow-hidden">
       {showShareModal && shareKey && (
         <ShareModal
           url={shareUrl || getShareUrl(shareKey)}
